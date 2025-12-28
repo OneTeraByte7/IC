@@ -1,0 +1,348 @@
+{
+  "patient_id": "demo_patient_001",
+  "start_date": "2025-12-28",
+  "baseline": {
+    "date": "2025-12-28",
+    "shoulder_range": 65,
+    "elbow_range": 45,
+    "wrist_strength": 3
+  },
+  "sessions": [
+    {
+      "date": "2025-12-28",
+      "session_number": 1,
+      "measurements": {
+        "shoulder_range": 65,
+        "elbow_range": 45,
+        "wrist_strength": 3.0
+      },
+      "performance": {
+        "reps": 8,
+        "duration_mins": 15,
+        "pain_level": 2
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 2,
+      "measurements": {
+        "shoulder_range": 68,
+        "elbow_range": 47,
+        "wrist_strength": 3.3
+      },
+      "performance": {
+        "reps": 9,
+        "duration_mins": 15,
+        "pain_level": 2
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 3,
+      "measurements": {
+        "shoulder_range": 71,
+        "elbow_range": 49,
+        "wrist_strength": 3.6
+      },
+      "performance": {
+        "reps": 10,
+        "duration_mins": 15,
+        "pain_level": 2
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 4,
+      "measurements": {
+        "shoulder_range": 74,
+        "elbow_range": 51,
+        "wrist_strength": 3.9
+      },
+      "performance": {
+        "reps": 11,
+        "duration_mins": 15,
+        "pain_level": 2
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 5,
+      "measurements": {
+        "shoulder_range": 77,
+        "elbow_range": 53,
+        "wrist_strength": 4.2
+      },
+      "performance": {
+        "reps": 12,
+        "duration_mins": 15,
+        "pain_level": 2
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 6,
+      "measurements": {
+        "shoulder_range": 80,
+        "elbow_range": 55,
+        "wrist_strength": 4.5
+      },
+      "performance": {
+        "reps": 13,
+        "duration_mins": 15,
+        "pain_level": 2
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 7,
+      "measurements": {
+        "shoulder_range": 83,
+        "elbow_range": 57,
+        "wrist_strength": 4.8
+      },
+      "performance": {
+        "reps": 14,
+        "duration_mins": 20,
+        "pain_level": 1
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 8,
+      "measurements": {
+        "shoulder_range": 88,
+        "elbow_range": 61,
+        "wrist_strength": 5.2
+      },
+      "performance": {
+        "reps": 15,
+        "duration_mins": 20,
+        "pain_level": 1
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 9,
+      "measurements": {
+        "shoulder_range": 93,
+        "elbow_range": 65,
+        "wrist_strength": 5.6
+      },
+      "performance": {
+        "reps": 16,
+        "duration_mins": 20,
+        "pain_level": 1
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 10,
+      "measurements": {
+        "shoulder_range": 98,
+        "elbow_range": 69,
+        "wrist_strength": 6.0
+      },
+      "performance": {
+        "reps": 17,
+        "duration_mins": 20,
+        "pain_level": 1
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 11,
+      "measurements": {
+        "shoulder_range": 103,
+        "elbow_range": 73,
+        "wrist_strength": 6.4
+      },
+      "performance": {
+        "reps": 18,
+        "duration_mins": 20,
+        "pain_level": 1
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 12,
+      "measurements": {
+        "shoulder_range": 108,
+        "elbow_range": 77,
+        "wrist_strength": 6.8
+      },
+      "performance": {
+        "reps": 19,
+        "duration_mins": 20,
+        "pain_level": 1
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 13,
+      "measurements": {
+        "shoulder_range": 113,
+        "elbow_range": 81,
+        "wrist_strength": 7.2
+      },
+      "performance": {
+        "reps": 20,
+        "duration_mins": 20,
+        "pain_level": 1
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 14,
+      "measurements": {
+        "shoulder_range": 118,
+        "elbow_range": 85,
+        "wrist_strength": 7.6
+      },
+      "performance": {
+        "reps": 21,
+        "duration_mins": 20,
+        "pain_level": 1
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 15,
+      "measurements": {
+        "shoulder_range": 123,
+        "elbow_range": 89,
+        "wrist_strength": 8.0
+      },
+      "performance": {
+        "reps": 22,
+        "duration_mins": 20,
+        "pain_level": 1
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 16,
+      "measurements": {
+        "shoulder_range": 128,
+        "elbow_range": 93,
+        "wrist_strength": 8.4
+      },
+      "performance": {
+        "reps": 23,
+        "duration_mins": 25,
+        "pain_level": 0
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 17,
+      "measurements": {
+        "shoulder_range": 131,
+        "elbow_range": 95,
+        "wrist_strength": 8.6
+      },
+      "performance": {
+        "reps": 24,
+        "duration_mins": 25,
+        "pain_level": 0
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 18,
+      "measurements": {
+        "shoulder_range": 134,
+        "elbow_range": 97,
+        "wrist_strength": 8.8
+      },
+      "performance": {
+        "reps": 25,
+        "duration_mins": 25,
+        "pain_level": 0
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 19,
+      "measurements": {
+        "shoulder_range": 137,
+        "elbow_range": 99,
+        "wrist_strength": 9.0
+      },
+      "performance": {
+        "reps": 26,
+        "duration_mins": 25,
+        "pain_level": 0
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 20,
+      "measurements": {
+        "shoulder_range": 140,
+        "elbow_range": 101,
+        "wrist_strength": 9.200000000000001
+      },
+      "performance": {
+        "reps": 27,
+        "duration_mins": 25,
+        "pain_level": 0
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 21,
+      "measurements": {
+        "shoulder_range": 143,
+        "elbow_range": 103,
+        "wrist_strength": 9.4
+      },
+      "performance": {
+        "reps": 28,
+        "duration_mins": 25,
+        "pain_level": 0
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 22,
+      "measurements": {
+        "shoulder_range": 146,
+        "elbow_range": 105,
+        "wrist_strength": 9.600000000000001
+      },
+      "performance": {
+        "reps": 29,
+        "duration_mins": 25,
+        "pain_level": 0
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 23,
+      "measurements": {
+        "shoulder_range": 149,
+        "elbow_range": 107,
+        "wrist_strength": 9.8
+      },
+      "performance": {
+        "reps": 30,
+        "duration_mins": 25,
+        "pain_level": 0
+      }
+    },
+    {
+      "date": "2025-12-28",
+      "session_number": 24,
+      "measurements": {
+        "shoulder_range": 152,
+        "elbow_range": 109,
+        "wrist_strength": 10.0
+      },
+      "performance": {
+        "reps": 31,
+        "duration_mins": 25,
+        "pain_level": 0
+      }
+    }
+  ]
+}
