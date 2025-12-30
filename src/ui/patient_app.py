@@ -78,4 +78,37 @@ def create_new_patient_data(patient_id, name):
 with st.sidebar:
     st.markdown("Patient Login")
     
-    if()
+    if st.session_state.patient_id is None:
+        patient_id = st.text_input("Patient ID", placeholder = "e.g, PAITENT001")
+        patient_name = st.text_input("Your Name", placeholder = "John Doe")
+        
+        if st.button("Login / Create Account", type = "primary"):
+            if patient_id and patient_name:
+                data = load_patient_data(patient_id)
+                if data is None:
+                    data = create_new_patient_data(patient_id, patient_name)
+                    st.success(f"Welcome, {data['name']}!")
+                else:
+                    st.success(f"Welcome back, {data['name']}!")
+                    
+                st.session_state.patient_id = patient_id
+                st.rerun()
+            else:
+                st.error("Please enter both ID and name")
+                
+    else:
+        data = load_patient_data(st.session_state.patient_id)
+        st.success(f"Logged in as: **{data['name']}**")
+        
+        if st.button("Logout"):
+            st.session_state.patient_id = None
+            st.rerun()
+            
+        st.markdown("---")
+        st.markdown("### Quick Stats")
+        st.metrics("Total Sessions", len(data['sessions']))
+        if data['sessions']:
+            total_reps = sum(s.get('reps', 0) for s in data['sessions'])
+            st.metric("Total Reps", total_reps)
+            
+            
