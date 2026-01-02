@@ -131,3 +131,160 @@ class ExerciseTracker:
                          cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
             
         return image, metrics
+    
+    def draw_landmarks(self, image, landmarks):
+        """Draw pose landmarks on image"""
+        height, width = image.shape[:2]
+        
+        # Define connections
+        connections = [
+            (11, 12), (12, 14), (14, 16), (11, 13), (13, 15),
+            (12, 24), (11, 23), (23, 24),
+            (24, 26), (26, 28), (23, 25), (25, 27)
+        ]
+        
+        # Draw connections
+        for connection in connections:
+            start_idx, end_idx = connection
+            if start_idx < len(landmarks) and end_idx < len(landmarks):
+                start = landmarks[start_idx]
+                end = landmarks[end_idx]
+                start_point = (int(start.x * width), int(start.y * height))
+                end_point = (int(end.x * width), int(end.y * height))
+                cv2.line(image, start_point, end_point, (245, 66, 230), 2)
+        
+        # Draw landmarks
+        for landmark in landmarks:
+            x = int(landmark.x * width)
+            y = int(landmark.y * height)
+            cv2.circle(image, (x, y), 3, (245, 117, 66), -1)
+    
+    def get_session_summary(self):
+        """Get session summary statistics"""
+        duration_secs = (datetime.now() - self.session_start).total_seconds() if self.session_start else 0
+        
+        return {
+            "reps": self.rep_count,
+            "max_angle": round(self.max_angle, 1),
+            "duration_mins": round(duration_secs / 60, 1),
+            "avg_angle": round(np.mean(self.angles_history), 1) if self.angles_history else 0,
+            "total_frames": len(self.angles_history)
+        }
+
+# Global tracker instance
+tracker = ExerciseTracker()
+
+@router.get("/start-session")
+async def start_session():
+    """Start new exercise session"""
+    tracker.reset()
+    return {
+        "message": "Session started",
+        "timestamp": tracker.session_start.isoformat()
+    }
+
+@router.get("/session-status")
+async def get_session_status():
+    """Get current session status"""
+    return {
+        "reps": tracker.rep_count,
+        "max_angle": tracker.max_angle,
+        "session_active": tracker.session_start is not None
+    }
+
+@router.get("/end-session")
+async def end_session():
+    """End session and get summary"""
+    summary = tracker.get_session_summary()
+    tracker.reset()
+    return {
+        "message": "Session ended",
+        "summary": summary
+    }
+
+@router.websocket("/ws/exercise")
+async def websocket_exercise_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for real-time exercise tracking"""
+    await websocket.accept()
+    
+    # Start session
+    tracker.reset()
+    
+    cap = cv2.VideoCapture(0)
+    frame_count = 0
+    
+    try:
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            
+            frame_count += 1
+            frame_timestamp_ms = int(cap.get(cv2.CAP_PROP_POS_MSEC))
+            
+            # Process frame
+            annotated_frame, metrics = tracker.process_frame(frame, frame_timestamp_ms)
+            
+            # Encode frame to base64
+            _, buffer = cv2.imencode('.jpg', annotated_frame)
+            frame_base64 = base64.b64encode(buffer).decode('utf-8')
+            
+            # Send data to client
+            await websocket.send_json({
+                "frame": frame_base64,
+                "metrics": metrics
+            })
+            
+            # Small delay to prevent overwhelming the client
+            await asyncio.sleep(0.033)  # ~30 FPS
+            
+    except WebSocketDisconnect:
+        print("Client disconnected")
+    finally:
+        cap.release()
+        summary = tracker.get_session_summary()
+        print(f"Session summary: {summary}")
+
+@router.get("/video-feed")
+async def video_feed():
+    """HTTP endpoint for video streaming (alternative to WebSocket)"""
+    
+    def generate_frames():
+        cap = cv2.VideoCapture(0)
+        frame_count = 0
+        
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            
+            frame_count += 1
+            frame_timestamp_ms = int(cap.get(cv2.CAP_PROP_POS_MSEC))
+            
+            # Process frame
+            annotated_frame, _ = tracker.process_frame(frame, frame_timestamp_ms)
+            
+            # Encode frame
+            ret, buffer = cv2.imencode('.jpg', annotated_frame)
+            frame_bytes = buffer.tobytes()
+            
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+        
+        cap.release()
+    
+    return StreamingResponse(
+        generate_frames(),
+        media_type="multipart/x-mixed-replace; boundary=frame"
+    )
+
+# Simple test endpoint
+@router.get("/test-camera")
+async def test_camera():
+    """Test if camera is accessible"""
+    cap = cv2.VideoCapture(0)
+    if cap.isOpened():
+        cap.release()
+        return {"camera_available": True, "message": "Camera is working"}
+    else:
+        return {"camera_available": False, "message": "Camera not accessible"}
