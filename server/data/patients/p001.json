@@ -1,0 +1,48 @@
+{
+  "patient_id": "p001",
+  "name": "Soham",
+  "created_date": "2025-12-30",
+  "baseline": {
+    "date": "2025-12-30",
+    "shoulder_range": 122.70003102365023,
+    "elbow_range": 90
+  },
+  "sessions": [
+    {
+      "date": "2025-12-30",
+      "timestamp": "2025-12-30T14:45:04.782Z",
+      "session_number": 1,
+      "exercise": "shoulder_raise",
+      "reps": 10,
+      "max_angle": 122.70003102365023,
+      "duration_mins": 15
+    },
+    {
+      "date": "2025-12-30",
+      "timestamp": "2025-12-30T14:45:19.470Z",
+      "session_number": 2,
+      "exercise": "shoulder_raise",
+      "reps": 10,
+      "max_angle": 132.92054627297054,
+      "duration_mins": 15
+    },
+    {
+      "date": "2025-12-30",
+      "timestamp": "2025-12-30T14:47:25.977Z",
+      "session_number": 3,
+      "exercise": "shoulder_raise",
+      "reps": 11,
+      "max_angle": 133.16552129670043,
+      "duration_mins": 15
+    },
+    {
+      "date": "2025-12-30",
+      "timestamp": "2025-12-30T14:51:34.065Z",
+      "session_number": 4,
+      "exercise": "shoulder_raise",
+      "reps": 13,
+      "max_angle": 171.1274051567134,
+      "duration_mins": 1
+    }
+  ]
+}
