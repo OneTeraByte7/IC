@@ -7,3 +7,7 @@ data/patients/
 *.pkl
 .vscode/
 /client/node_modules
+server/__pycache__
+.env
+.gitignore
+server/routers/__init__.py
