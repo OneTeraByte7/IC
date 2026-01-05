@@ -101,7 +101,7 @@ class AzureOpenAIService:
             print(f"Azure OpenAI error: {e}")
             return self._get_mock_response(message, context)
         
-    def get_motivational(self, sessions: int, current_angle: float, baseline_angle: float):
+    def get_motivation(self, sessions: int, current_angle: float, baseline_angle: float):
         improvement = current_angle - baseline_angle
         
         prompt = f"""The Patient has completed {sessions} rehabilition sessions.
@@ -117,4 +117,34 @@ class AzureOpenAIService:
             elif improvement > 10:
                 return f"Excellent work! {improvement:.1f}degree improvement means you're regaining real function. Keep this momentum going"
             
+            elif improvement > 0:
+                return f"Steady progress! Every degree matters. You've improved {improvement:.1f} degree and you're building a strong foundation"
             
+            else:
+                 return f"You've completed {sessions} sessions -  that consistency alone is victory! Progress takes time, and you're showing up. Keep Going"
+             
+        return self.chat(prompt)
+    
+    def get_exercise_ffedback(self, reps: int, max_angle: float, target_angle: float = 160) -> str:
+        
+        prompt = f"""The patient just completed {reps} shoulder raise repetitions with a maximum angle of {max_angle:.1f} degree.
+        Target range is {target_angle} degree.
+        
+        Give brief, encouraging feedback on their performance nad one specific tip for improvement."""
+        
+        if not self.available:
+            if max_angle >= target_angle:
+                return f"Outstanding! You achieved {max_angle:.1f} degree - that's full range! Yor'r form is Excellent"
+            
+            elif max_angle >= 140:
+                return f"Great work ! You reached {max_angle:.1f}degree. Try to push for those last {target_angle - max_angle:.0f} degree slowly"
+            
+            elif max_angle >= 120:
+                return f"Good effort! {max_angle:.1f} degree is solid progress. Focus on slow, controled movement to gain those extreme degrees"
+            
+            else:
+                return f"Nice consistency with {reps} reps! Work on gradually increasing your range. Even 5 degree morenext time is progress !"
+            
+        return self.chat(prompt)
+    
+    
