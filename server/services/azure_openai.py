@@ -125,7 +125,7 @@ class AzureOpenAIService:
              
         return self.chat(prompt)
     
-    def get_exercise_ffedback(self, reps: int, max_angle: float, target_angle: float = 160) -> str:
+    def get_exercise_feedback(self, reps: int, max_angle: float, target_angle: float = 160) -> str:
         
         prompt = f"""The patient just completed {reps} shoulder raise repetitions with a maximum angle of {max_angle:.1f} degree.
         Target range is {target_angle} degree.
@@ -147,4 +147,36 @@ class AzureOpenAIService:
             
         return self.chat(prompt)
     
+    def generate_weekly_summary(self, weekly_data: dict) -> str:
+        prompt = f"""Generate a weekly progress summary for this patient:
+    Sessions completed: {weekly_data.get('sessions', 0)}
+    Average shoulder range: {weekly_data.get('avg_angle', 0):.1f} degree
+    Improvement this week: {weekly_data.get('improvement', 0):+.1f} degree
+    Total reps: {weekly_data.get('total_reps', 0)}
     
+    Include:
+    1. Celebration of ehat they accomplished
+    2. Functional meaning of theri progress (what can they do now?)
+    3. One specific tip for the next week
+    4. Encouragement to maintain consistency"""
+    
+        if not self.available:
+            sessions = weekly_data.get("sessions", 0)
+            improvement = weekly_data.get('improvement', 0)
+            
+            summary = f"This week: {sessions} sesssions completed"
+            
+            if improvement > 10:
+                summary += f" with {improvement:.1f} degree improvement - exeptional"
+                
+            elif improvement > 5:
+                summary += f" with {improvement:.1f} degree gain -  excellent work !"
+                
+            elif improvement > 0:
+                summary += f"with {improvement:.1f} degree progress - steady advancement"
+                
+            summary += "Your consistency is they key to lasting recovery. Next week, try adding 2-4 more reps per session. You're on the right path"
+            
+            return summary
+        
+        return self.chat(prompt)
