@@ -10,7 +10,7 @@ load_dotenv()
 
 router = APIRouter(prefix = "/api/openai", tag = ['Azure OpenAI'])
 
-class CharRequest(BaseModel):
+class ChatRequest(BaseModel):
     patient_id: str
     message: str
     context: Optional[dict] = None
@@ -205,3 +205,50 @@ class AzureOpenAIService:
         
 openai_service = AzureOpenAIService()
 
+#API Endpoints
+
+@router.get('/status')
+async def get_openai_status():
+    return{
+        "available": openai_service.available,
+        "deployment": openai_service.deployment,
+        "message": "Azure OpenAI ready" if openai_service.available else "Running in mode. Add credentials to .env for full AI features"
+    }
+    
+@router.post("/chat")
+async def chat_with_coach(request: ChatRequest):
+    
+    try:
+        response = openai_service.chat(request.message, request.context)
+        
+        return{
+            "patinet_id": request.patient_id,
+            "message": request.message,
+            "response": response,
+            "powered_by": "Azure OpenAI GPT-4" if openai_service.available else "Mock AI (Demo Mode)"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=50, detail = str(e))
+    
+@router.post("/motivation")
+async def get_motivation(request: CoachRequest):
+    try:
+        response = openai_service.get_motivation(
+            request.total_sessions,
+            request.current_angle,
+            request.baseline_angle
+        )
+        
+        return{
+            "patient_id": request.patient_id,
+            "motivation": response,
+            "sessions": request.total_sessions,
+            "improvement": request.current_angle - request.baseline_angle
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@router.post("/feedback")
+async def get_exercise_feedback(reps: int, max_angle: float, target_angle: float = 160):
