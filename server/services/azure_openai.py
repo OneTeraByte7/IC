@@ -180,3 +180,28 @@ class AzureOpenAIService:
             return summary
         
         return self.chat(prompt)
+    
+    def _get_mock_response(self, message: str, contect: dict = None) -> str:
+        message_lower = message.lower()
+        
+        if "motivation" in message_lower or "encourage" in message_lower:
+            return "You're making fantastic progress! Every session builds strength and inependance. Your dedication is truely inspring - keep showing up"
+        
+        elif 'pain' in message_lower:
+            return "Mild stretching discomfort is normal! but sharp or increasing pain means stop immediately. Always work witin you pain-free range. If painpersists, consult the doctors"
+        
+        elif "how often" in message_lower or "frequency" in message_lower:
+            return "Aim for 3-4 sessions per week with rest days in between. Consistency matters more than intensity. Your body needs recovery time to build strength!"
+        
+        elif "improve" in message_lower or "better" in message_lower:
+            return "Most patients see noticeable improvement after 4-6 weeks of consistent practice. Progress isn't always linear - some weeks you'll surge forward, others you'll plateau. Both are normal. Keep going!"
+        
+        elif "tired" in message_lower or "fatigue" in message_lower:
+            return "Fatigue is your body's way of saying it needs rest. Take an extra rest day if needed. Recovery happens during rest, not just exercise. Listen to your body!"
+        
+        else:
+            return "That's a great question! While I can provide general guidance, please consult your physical therapist or doctor for personalized advice about your specific recovery. They know your case best!"
+
+        
+openai_service = AzureOpenAIService()
+
