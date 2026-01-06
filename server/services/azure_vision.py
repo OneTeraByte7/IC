@@ -104,3 +104,54 @@ class AzureVisionService:
             except Exception as e:
                 print(f"Azure Vision error: {e}")
                 return self._get_mock_analysis()
+            
+        def verify_camera_setup(self, image_data: bytes) -> dict:
+        
+            if not self.available:
+                return {
+                    "setup_ok": True,
+                    "message": "Camera setup looks good (mock mode)",
+                    "issues": []
+                }
+            
+            try:
+                result = self.client.analyze(
+                    image_data=image_data,
+                    visual_features=[VisualFeatures.PEOPLE]
+                )
+                
+                issues = []
+                
+                if not result.people or len(result.people.list) == 0:
+                    issues.append("No person detected - position yourself in frame")
+                elif len(result.people.list) > 1:
+                    issues.append("Multiple people detected - ensure you're alone in frame")
+                else:
+                    person = result.people.list[0]
+                    bbox = person.bounding_box
+                    
+                    center_x = (bbox.x + bbox.width / 2) / result.metadata.width
+                    if center_x < 0.3 or center_x > 0.7:
+                        issues.append("Position yourself in the center of the frame")
+                    
+                    if bbox.height / result.metadata.height < 0.6:
+                        issues.append("Move back - we need to see your full body")
+                    elif bbox.height / result.metadata.height > 0.95:
+                        issues.append("Move back a bit - you're too close to camera")
+                
+                setup_ok = len(issues) == 0
+                message = "Camera setup is perfect!" if setup_ok else "Please adjust camera positioning"
+                
+                return {
+                    "setup_ok": setup_ok,
+                    "message": message,
+                    "issues": issues
+                }
+                
+            except Exception as e:
+                print(f"Azure Vision error: {e}")
+                return {
+                    "setup_ok": False,
+                    "message": "Could not verify setup",
+                    "issues": [str(e)]
+                }
