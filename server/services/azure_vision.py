@@ -167,3 +167,75 @@ class AzureVisionService:
                     "Keep movements slow and controlled"
                 ]
             }
+            
+vision_service = AzureVisionService()
+            
+@router.get("/status")
+async def get_vision_status():
+    """Check Azure Vision service status"""
+    return {
+        "available": vision_service.available,
+        "message": "Azure Computer Vision ready" if vision_service.available else "Running in mock mode"
+    }
+
+@router.post("/analyze-form")
+async def analyze_form(file: UploadFile = File(...)):
+    """Analyze exercise form from uploaded image"""
+    
+    try:
+        # Read image data
+        image_data = await file.read()
+        
+        # Analyze with Azure Vision
+        result = vision_service.analyze_exercise_form(image_data)
+        
+        return FormAnalysisResult(**result)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/verify-camera")
+async def verify_camera(file: UploadFile = File(...)):
+    """Verify camera positioning"""
+    
+    try:
+        image_data = await file.read()
+        result = vision_service.verify_camera_setup(image_data)
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/analyze-frame")
+async def analyze_frame_base64(frame_base64: str):
+    """Analyze form from base64 encoded frame"""
+    
+    try:
+        # Decode base64
+        image_data = base64.b64decode(frame_base64)
+        
+        # Analyze
+        result = vision_service.analyze_exercise_form(image_data)
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/demo")
+async def demo_vision():
+    """Demo Azure Vision features"""
+    
+    return {
+        "service": "Azure Computer Vision",
+        "available": vision_service.available,
+        "features": [
+            "Exercise form analysis",
+            "Posture scoring",
+            "Camera positioning verification",
+            "Person detection",
+            "Real-time feedback"
+        ],
+        "message": "Upload an image to /analyze-form endpoint to test" if vision_service.available else "Running in mock mode - add Azure credentials for real analysis"
+    }
