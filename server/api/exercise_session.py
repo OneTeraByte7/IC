@@ -9,10 +9,20 @@ import json
 import asyncio
 from datetime import datetime
 import base64
+import os
+from pathlib import Path
 
-router = APIRouter(prefix="/ap/exercise",tags = ['Exercise Session'])
+router = APIRouter(prefix="/api/exercise",tags = ['Exercise Session'])
 
-base_options = python.BaseOptions(model_asset_path='pose_landmarker_lite.task')
+# Get the correct path to the model file
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+MODEL_PATH = PROJECT_ROOT / 'pose_landmarker_lite.task'
+
+# Fallback to server/assets if root path doesn't exist
+if not MODEL_PATH.exists():
+    MODEL_PATH = Path(__file__).parent.parent / "assets" / "pose_landmarker_lite.task"
+
+base_options = python.BaseOptions(model_asset_path=str(MODEL_PATH))
 options = vision.PoseLandmarkerOptions(
     base_options=base_options,
     running_mode=vision.RunningMode.VIDEO,
