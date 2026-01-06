@@ -155,3 +155,15 @@ class AzureVisionService:
                     "message": "Could not verify setup",
                     "issues": [str(e)]
                 }
+                
+        def _get_mock_analysis(self) -> dict:
+            return {
+                "detected": True,
+                "confidence": 0.92,
+                "feedback": "Good form detected (mock mode - add Azure credentials for real analysis)",
+                "posture_score": 85,
+                "recommendations": [
+                    "Maintain steady breathing",
+                    "Keep movements slow and controlled"
+                ]
+            }
