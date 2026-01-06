@@ -252,3 +252,69 @@ async def get_motivation(request: CoachRequest):
     
 @router.post("/feedback")
 async def get_exercise_feedback(reps: int, max_angle: float, target_angle: float = 160):
+    try:
+        response = openai_service.get_exercise_feedback(reps, max_angle, target_angle)
+        
+        return{
+            "reps":reps,
+            "max_angle": max_angle,
+            "target_angle": target_angle,
+            "feedback":response
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail = str(e))
+    
+@router.post('/weekly-summary')
+async def get_weekly_rsummary(
+    sessions: int,
+    avg_angle: float,
+    improvement: float,
+    total_reps: int
+):
+    
+    try:
+        weekly_data = {
+            "sessions": sessions,
+            "avg_angle": avg_angle,
+            "improvement": improvement,
+            "total_reps": total_reps
+        }
+        
+        response = openai_service.generate_weekly_summary(weekly_data)
+        
+        return{
+            "summary":response,
+            "data": weekly_data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail = str(e))
+    
+@router.post("/ask")
+async def ask_question(question: str, patient_id: Optional[str] = None, context: Optional[dict] = None):
+    try:
+        response = openai_service.answer_question(question , context)
+        
+        return{
+            "question": question,
+            "answer": response,
+            "patient_id": patient_id
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail = str(e))
+    
+@router.get("/demo")
+async def demo_api():
+    return{
+        "chat":openai_service.chat("How can I Improve my recovery?"),
+        "motivation": openai_service.get_motivation(5, 125, 65),
+        "feedback": openai_service.get_exercise_feedback(10, 145),
+        "summary": openai_service.generate_weekly_summary({
+            "sessions": 3,
+            "avg_angle": 130,
+            "improvement": 12,
+            "total_reps": 30
+        }),
+        "powered_by": "Azure OpenAI GPT-4" if openai_service.available else "Mock AI (Demo Mode)"
+    }
