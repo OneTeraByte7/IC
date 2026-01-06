@@ -40,13 +40,13 @@ class AzureVisionService:
                 print("Azure Computer Vision initialized successfully")
                 
             except Exception as e:
-                print("Azure Vision inotialization failed: {e}")
+                print(f"Azure Vision initialization failed: {e}")
                 self.available = False
                 self.client = None
-        
-        def analyze_exercise_form(self, image_data: bytes) -> dict:
-            if not self.available:
-                return self._get_mock_analysis()
+    
+    def analyze_exercise_form(self, image_data: bytes) -> dict:
+        if not self.available:
+            return self._get_mock_analysis()
             
             try:
                 result = self.client.analyze(

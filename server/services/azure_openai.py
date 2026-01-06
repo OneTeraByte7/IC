@@ -8,7 +8,7 @@ import json
 
 load_dotenv()
 
-router = APIRouter(prefix = "/api/openai", tag = ['Azure OpenAI'])
+router = APIRouter(prefix = "/api/openai", tags = ['Azure OpenAI'])
 
 class ChatRequest(BaseModel):
     patient_id: str
@@ -27,9 +27,9 @@ class AzureOpenAIService:
      #Azure OpenAI GPT-4 for AI Physical Therapist
      
     def __init__(self):
-        self.api_key = os.getenv("AZURE_OPEAI_KEY")
+        self.api_key = os.getenv("AZURE_OPENAI_KEY")
         self.endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
-        self.deployment = os.getenv("AZURE_OPENAI_DEPLOYMWNT", "gpt-4")
+        self.deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4")
         self.api_version = os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-15-preview")
                                      
         if not self.api_key or not self.endpoint:
