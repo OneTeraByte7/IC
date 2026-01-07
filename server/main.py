@@ -15,6 +15,8 @@ from api.exercise_session import router as api_exercise_router
 from services.azure_speech import router as speech_router
 from services.azure_openai import router as openai_router
 from services.azure_vision import router as vision_router
+from services.neural_recovery import router as neural_router
+from services.exercise_library import router as exercise_library_router
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -50,18 +52,24 @@ app.include_router(api_exercise_router, tags=["Exercise API"])
 app.include_router(speech_router, tags=["Azure Speech"])
 app.include_router(openai_router, tags=["Azure OpenAI"])
 app.include_router(vision_router, tags=["Azure Vision"])
+app.include_router(neural_router, tags=["🧠 Neural Recovery AI"])
+app.include_router(exercise_library_router, tags=["📚 Exercise Library"])
 
 @app.get("/")
 async def root():
     """Root endpoint - API information"""
     return {
         "message": "NeuroPath AI - Powered by Microsoft Azure",
-        "version": "2.0.0",
+        "version": "3.0.0",
         "status": "operational",
+        "innovation": "🏆 Imagine Cup 2026 Edition",
         "services": {
             "azure_openai": "GPT-4 AI Coach",
             "azure_speech": "Voice Guidance & Commands",
-            "azure_vision": "Exercise Form Analysis"
+            "azure_vision": "Exercise Form Analysis",
+            "neural_recovery": "🧠 Neural Recovery Prediction (BREAKTHROUGH)",
+            "exercise_library": "📚 50+ Clinical Exercises",
+            "3d_visualization": "🦴 Real-time 3D Skeleton"
         },
         "docs": "/api/docs",
         "health": "/api/health",
