@@ -32,15 +32,27 @@ class PoseData(BaseModel):
 # Get the correct path to the model file
 MODEL_PATH = Path(__file__).parent.parent / "assets" / "pose_landmarker_lite.task"
 
-base_options = python.BaseOptions(model_asset_path=str(MODEL_PATH))
-options = vision.PoseLandmarkerOptions(
-    base_options=base_options,
-    running_mode=vision.RunningMode.VIDEO,
-    min_pose_detection_confidence=0.5,
-    min_tracking_confidence=0.5
-)
+# Lazy initialization to prevent startup errors
+pose_landmarker = None
 
-pose_landmarker = vision.PoseLandmarker.create_from_options(options)
+def get_pose_landmarker():
+    """Lazy load pose landmarker to prevent startup errors"""
+    global pose_landmarker
+    if pose_landmarker is None:
+        try:
+            base_options = python.BaseOptions(model_asset_path=str(MODEL_PATH))
+            options = vision.PoseLandmarkerOptions(
+                base_options=base_options,
+                running_mode=vision.RunningMode.VIDEO,
+                min_pose_detection_confidence=0.5,
+                min_tracking_confidence=0.5
+            )
+            pose_landmarker = vision.PoseLandmarker.create_from_options(options)
+        except Exception as e:
+            print(f"⚠️  MediaPipe initialization warning: {e}")
+            print("ℹ️  Server will run in mock mode for pose detection")
+            pose_landmarker = None
+    return pose_landmarker
 
 class ExerciseTracker:
     def __init__(self):
@@ -86,9 +98,33 @@ class ExerciseTracker:
         
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image.flags.writeable = False
-        mp_image = mp.Image(image_format = mp.ImageFormat.SRGB, data=image)
         
-        results = pose_landmarker.detect_for_video(mp_image, frame_timestamp_ms)
+        # Get pose landmarker (lazy loaded)
+        landmarker = get_pose_landmarker()
+        
+        # If MediaPipe is not available, return mock data
+        if landmarker is None:
+            return frame, {
+                "angle": 0,
+                "reps": self.rep_count,
+                "max_angle": self.max_angle,
+                "feedback": "MediaPipe not initialized - Demo mode",
+                "pose_detected": False,
+            }
+        
+        try:
+            mp_image = mp.Image(image_format = mp.ImageFormat.SRGB, data=image)
+            results = landmarker.detect_for_video(mp_image, frame_timestamp_ms)
+        except Exception as e:
+            # MediaPipe Image creation failed (Python 3.13 issue)
+            return frame, {
+                "angle": 0,
+                "reps": self.rep_count,
+                "max_angle": self.max_angle,
+                "feedback": "MediaPipe compatibility issue - Use Python 3.11",
+                "pose_detected": False,
+            }
+        
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         
