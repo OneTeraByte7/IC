@@ -33,24 +33,49 @@ class AzureOpenAIService:
         self.api_version = os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-15-preview")
                                      
         if not self.api_key or not self.endpoint:
-            print("Azure OpenAI not configured, Running in mock mode")
+            print("⚠️  Azure OpenAI not configured - Running in mock mode")
             self.available = False
             self.client = None
         else:
             try:
+                # Create client with minimal parameters for compatibility
                 self.client = AzureOpenAI(
-                    api_key = self.api_key,
-                    api_version = self.api_version,
-                    azure_endpoint = self.endpoint
+                    api_key=self.api_key,
+                    api_version=self.api_version,
+                    azure_endpoint=self.endpoint
                 )
                 self.available = True
+                print("✅ Azure OpenAI initialized successfully")
                 
-                print("Azure OpenAI initiated successfully")
-                
+            except TypeError as e:
+                # Handle version compatibility issues
+                if "proxies" in str(e) or "http_client" in str(e):
+                    print(f"⚠️  OpenAI package version issue. Trying alternative initialization...")
+                    try:
+                        # Try with absolute minimal parameters
+                        import openai
+                        openai.api_type = "azure"
+                        openai.api_key = self.api_key
+                        openai.api_base = self.endpoint
+                        openai.api_version = self.api_version
+                        self.client = None  # Use openai module directly
+                        self.available = True
+                        self.use_legacy = True
+                        print("✅ Azure OpenAI initialized (legacy mode)")
+                    except Exception as e2:
+                        print(f"⚠️  Azure OpenAI initialization failed: {e2}")
+                        print("ℹ️  Please update openai package: pip install --upgrade openai")
+                        self.available = False
+                        self.client = None
+                        self.use_legacy = False
+                else:
+                    raise
             except Exception as e:
-                print(f" Azure OpenAI initialization failed: {e}")
+                print(f"⚠️  Azure OpenAI initialization failed: {e}")
+                print("ℹ️  Running in mock mode - responses will be simulated")
                 self.available = False
                 self.client = None
+                self.use_legacy = False
                 
                 
         self.system_prompt = """You are an expert physical therapist specializing in stroke rehabilitation.
