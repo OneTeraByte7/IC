@@ -48,6 +48,20 @@ const AICoachAvatar = ({
         { time: 3000, message: "Now slowly lower your arms back down." },
       ]
     },
+    knee_extension: {
+      name: "Knee Extension",
+      keyframes: [
+        { time: 0, positions: { leftLeg: 90, rightLeg: 90 } },
+        { time: 2000, positions: { leftLeg: 180, rightLeg: 90 } },
+        { time: 4000, positions: { leftLeg: 90, rightLeg: 90 } },
+      ],
+      instructions: [
+        { time: 0, message: "Let's practice knee extensions. Sit comfortably." },
+        { time: 1000, message: "Slowly extend your left leg straight out." },
+        { time: 2500, message: "Hold with your leg fully extended." },
+        { time: 3000, message: "Now slowly lower your leg back down." },
+      ]
+    },
     shoulder_rotation: {
       name: "Shoulder Rotation",
       keyframes: [
@@ -243,30 +257,34 @@ const AICoachAvatar = ({
 
   // Play exercise animation
   useEffect(() => {
-    if (!isPlaying || !avatarRef.current) return;
+    if (!isPlaying || !avatarRef.current) {
+      // Cleanup animation when stopped
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+      return;
+    }
 
     const animation = EXERCISE_ANIMATIONS[exerciseType];
     if (!animation) return;
 
     const startTime = Date.now();
-    let instructionIndex = 0;
+    const instructionShown = useRef(new Set());
 
     const animateExercise = () => {
+      if (!avatarRef.current || !isPlaying) return;
+
       const elapsed = Date.now() - startTime;
       const totalDuration = animation.keyframes[animation.keyframes.length - 1].time;
-
-      if (elapsed >= totalDuration) {
-        // Loop animation
-        animationRef.current = requestAnimationFrame(animateExercise);
-        return;
-      }
+      const loopTime = elapsed % totalDuration;
 
       // Find current keyframe
       let currentKeyframe = animation.keyframes[0];
       let nextKeyframe = animation.keyframes[1];
 
       for (let i = 0; i < animation.keyframes.length - 1; i++) {
-        if (elapsed >= animation.keyframes[i].time && elapsed < animation.keyframes[i + 1].time) {
+        if (loopTime >= animation.keyframes[i].time && loopTime < animation.keyframes[i + 1].time) {
           currentKeyframe = animation.keyframes[i];
           nextKeyframe = animation.keyframes[i + 1];
           break;
@@ -274,7 +292,7 @@ const AICoachAvatar = ({
       }
 
       // Interpolate between keyframes
-      const segmentProgress = (elapsed - currentKeyframe.time) / (nextKeyframe.time - currentKeyframe.time);
+      const segmentProgress = (loopTime - currentKeyframe.time) / (nextKeyframe.time - currentKeyframe.time);
       
       // Update arm positions
       if (currentKeyframe.positions.leftArm !== undefined) {
@@ -298,14 +316,21 @@ const AICoachAvatar = ({
         }
       }
 
-      // Show coaching instructions
-      if (instructionIndex < animation.instructions.length && 
-          elapsed >= animation.instructions[instructionIndex].time) {
-        const instruction = animation.instructions[instructionIndex];
-        coachingCallback(instruction.message);
-        setIsSpeaking(true);
-        setTimeout(() => setIsSpeaking(false), 2000);
-        instructionIndex++;
+      // Show coaching instructions (once per loop)
+      for (let i = 0; i < animation.instructions.length; i++) {
+        const instruction = animation.instructions[i];
+        const instructionKey = `${Math.floor(elapsed / totalDuration)}_${i}`;
+        if (loopTime >= instruction.time && !instructionShown.current.has(instructionKey)) {
+          instructionShown.current.add(instructionKey);
+          coachingCallback(instruction.message);
+          setIsSpeaking(true);
+          setTimeout(() => setIsSpeaking(false), 2000);
+        }
+      }
+
+      // Clear shown instructions on loop reset
+      if (loopTime < 100) {
+        instructionShown.current.clear();
       }
 
       animationRef.current = requestAnimationFrame(animateExercise);
@@ -316,8 +341,8 @@ const AICoachAvatar = ({
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
       }
-      // Don't call setCurrentPhase here - it causes infinite loop
     };
   }, [isPlaying, exerciseType, coachingCallback]);
 

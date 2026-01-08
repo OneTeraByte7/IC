@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Camera, Play, Pause, RotateCcw, Target, TrendingUp, Award } from 'lucide-react';
+import { Camera, Play, Pause, RotateCcw, Target, TrendingUp, Award, ChevronDown } from 'lucide-react';
 import Skeleton3DViewer from './Skeleton3DViewer';
 import AICoachAvatar from './AICoachAvatar';
+import ExerciseWebcam from './ExerciseWebcam';
 
 /**
  * Professional Exercise Dashboard
@@ -9,12 +10,33 @@ import AICoachAvatar from './AICoachAvatar';
  * INNOVATION: Clinical-grade PT interface with real-time feedback
  */
 
+// Available exercises
+const EXERCISES = [
+  {
+    id: 'arm_raise',
+    name: 'Arm Raise (Bicep Curl)',
+    description: 'Strengthens arm and shoulder muscles',
+    targetReps: 15,
+    difficulty: 'Beginner',
+    icon: '💪'
+  },
+  {
+    id: 'knee_extension',
+    name: 'Knee Extension',
+    description: 'Strengthens quadriceps and improves knee stability',
+    targetReps: 12,
+    difficulty: 'Beginner',
+    icon: '🦵'
+  }
+];
+
 const ExerciseDashboard = ({ 
   patientId,
-  exerciseType = 'arm_raise',
   onComplete 
 }) => {
   const videoRef = useRef(null);
+  const [selectedExercise, setSelectedExercise] = useState(EXERCISES[0]);
+  const [showExerciseMenu, setShowExerciseMenu] = useState(false);
   const [isExercising, setIsExercising] = useState(false);
   const [landmarks, setLandmarks] = useState(null);
   const [repCount, setRepCount] = useState(0);
@@ -34,6 +56,16 @@ const ExerciseDashboard = ({
     rightElbow: { current: 0, target: 135, status: 'neutral' },
   });
 
+  // Handle exercise selection
+  const selectExercise = (exercise) => {
+    setSelectedExercise(exercise);
+    setTargetReps(exercise.targetReps);
+    setShowExerciseMenu(false);
+    setRepCount(0);
+    setFormScore(0);
+    setFeedback([]);
+  };
+
   // Start/stop exercise session
   const toggleExercise = () => {
     if (isExercising) {
@@ -44,24 +76,22 @@ const ExerciseDashboard = ({
       setRepCount(0);
       setFormScore(0);
       setFeedback([]);
-      startCamera();
     }
   };
 
-  // Initialize camera
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: 1280, height: 720 } 
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showExerciseMenu && !event.target.closest('.exercise-dropdown')) {
+        setShowExerciseMenu(false);
       }
-    } catch (error) {
-      console.error('Camera error:', error);
-      addFeedback('error', 'Unable to access camera. Please check permissions.');
-    }
-  };
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showExerciseMenu]);
+
+  // Initialize camera - removed as ExerciseWebcam handles it
 
   // Add feedback message
   const addFeedback = (type, message) => {
@@ -180,6 +210,59 @@ const ExerciseDashboard = ({
             <p className="text-gray-400 text-sm mt-1">Real-time 3D motion analysis powered by Azure AI</p>
           </div>
           <div className="flex items-center gap-4">
+            {/* Exercise Selection Dropdown */}
+            <div className="relative exercise-dropdown">
+              <button
+                onClick={() => setShowExerciseMenu(!showExerciseMenu)}
+                disabled={isExercising}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-800/80 border border-slate-700/50 hover:bg-slate-700/80 transition-all ${
+                  isExercising ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                <span className="text-2xl">{selectedExercise.icon}</span>
+                <div className="text-left">
+                  <div className="text-sm font-medium text-white">{selectedExercise.name}</div>
+                  <div className="text-xs text-gray-400">{selectedExercise.description}</div>
+                </div>
+                <ChevronDown size={16} className="text-gray-400" />
+              </button>
+
+              {/* Dropdown Menu */}
+              {showExerciseMenu && !isExercising && (
+                <div className="absolute top-full mt-2 right-0 w-96 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl z-50 overflow-hidden">
+                  <div className="p-2 bg-slate-900/50 border-b border-slate-700">
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">Select Exercise</p>
+                  </div>
+                  {EXERCISES.map((exercise) => (
+                    <button
+                      key={exercise.id}
+                      onClick={() => selectExercise(exercise)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-700/50 transition-colors text-left ${
+                        selectedExercise.id === exercise.id ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''
+                      }`}
+                    >
+                      <span className="text-3xl">{exercise.icon}</span>
+                      <div className="flex-1">
+                        <div className="font-medium text-white">{exercise.name}</div>
+                        <div className="text-xs text-gray-400 mt-1">{exercise.description}</div>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-300">
+                            {exercise.difficulty}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            Target: {exercise.targetReps} reps
+                          </span>
+                        </div>
+                      </div>
+                      {selectedExercise.id === exercise.id && (
+                        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="text-right">
               <div className="text-sm text-gray-400">Patient ID</div>
               <div className="text-lg font-semibold">{patientId || 'DEMO-001'}</div>
@@ -223,21 +306,13 @@ const ExerciseDashboard = ({
                 </span>
               </div>
               
-              {/* Video feed */}
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="absolute inset-0 w-full h-full object-cover"
+              {/* Webcam with Pose Detection */}
+              <ExerciseWebcam
+                isActive={isExercising}
+                exerciseType={selectedExercise.id}
+                onPoseUpdate={(pose) => setLandmarks(pose.keypoints)}
+                onRepCount={(count) => setRepCount(count)}
               />
-              
-              {/* 3D Skeleton Overlay */}
-              {isExercising && (
-                <div className="absolute inset-0">
-                  <Skeleton3DViewer landmarks={landmarks} isActive={isExercising} />
-                </div>
-              )}
             </div>
 
             {/* AI Coach View */}
@@ -250,7 +325,7 @@ const ExerciseDashboard = ({
               </div>
               
               <AICoachAvatar
-                exerciseType={exerciseType}
+                exerciseType={selectedExercise.id}
                 isPlaying={isExercising}
                 landmarks={landmarks}
                 onCoachingMessage={handleCoachingMessage}
