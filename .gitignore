@@ -8,7 +8,8 @@ data/patients/
 .vscode/
 /client/node_modules
 server/__pycache__
-.env
+server/.env
 .gitignore
 server/routers/__init__.py
 server/venv
+client/.env
