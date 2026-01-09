@@ -2,18 +2,22 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { patientService, healthService } from '../services/patientService'
-import { Users, TrendingUp, Activity, AlertCircle, CheckCircle, Plus } from 'lucide-react'
+import { getUserExerciseSessions } from '../services/exerciseService'
+import { useAuth } from '../hooks/useAuth'
+import { Users, TrendingUp, Activity, AlertCircle, CheckCircle, Plus, Calendar, Award } from 'lucide-react'
 
 const Dashboard = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [patients, setPatients] = useState([])
+  const [sessions, setSessions] = useState([])
   const [loading, setLoading] = useState(true)
   const [healthStatus, setHealthStatus] = useState(null)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     loadDashboardData()
-  }, [])
+  }, [user])
 
   const loadDashboardData = async () => {
     try {
@@ -27,6 +31,12 @@ const Dashboard = () => {
       // Load patients
       const patientsData = await patientService.getAllPatients()
       setPatients(patientsData)
+
+      // Load user sessions from Supabase
+      if (user) {
+        const userSessions = await getUserExerciseSessions(user.id, 50)
+        setSessions(userSessions)
+      }
     } catch (err) {
       setError('Failed to connect to server. Please ensure the backend is running.')
       console.error('Dashboard error:', err)
@@ -44,16 +54,14 @@ const Dashboard = () => {
     },
     {
       icon: Activity,
-      label: 'Active Sessions',
-      value: patients.filter(p => p.active_sessions > 0).length || 0,
+      label: 'Total Sessions',
+      value: sessions.length || 0,
       color: 'from-teal-500 to-teal-600',
     },
     {
       icon: TrendingUp,
-      label: 'Avg Progress',
-      value: patients.length > 0 
-        ? `${Math.round(patients.reduce((acc, p) => acc + (p.progress_percentage || 0), 0) / patients.length)}%`
-        : '0%',
+      label: 'Completed',
+      value: sessions.filter(s => s.completion_status === 'completed').length || 0,
       color: 'from-green-500 to-green-600',
     },
   ]
@@ -192,6 +200,115 @@ const Dashboard = () => {
                   </div>
                 </motion.div>
               ))}
+            </div>
+          )}
+        </motion.div>
+
+        {/* All Sessions from Supabase */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="card mt-6"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <Calendar className="w-6 h-6" />
+              All Exercise Sessions
+            </h2>
+            <span className="text-sm text-gray-500">{sessions.length} total</span>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-healthcare-primary mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading sessions...</p>
+            </div>
+          ) : sessions.length === 0 ? (
+            <div className="text-center py-12">
+              <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-600">No exercise sessions found</p>
+              <p className="text-sm text-gray-500 mt-2">Start an exercise session to see your history</p>
+              <button
+                onClick={() => navigate('/exercise')}
+                className="mt-4 btn-primary"
+              >
+                Start First Session
+              </button>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2 border-gray-200">
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Date & Time</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Exercise Type</th>
+                    <th className="text-center py-3 px-4 font-semibold text-gray-700">Reps</th>
+                    <th className="text-center py-3 px-4 font-semibold text-gray-700">Form Score</th>
+                    <th className="text-center py-3 px-4 font-semibold text-gray-700">Duration</th>
+                    <th className="text-center py-3 px-4 font-semibold text-gray-700">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sessions.map((session, index) => (
+                    <motion.tr
+                      key={session.id || index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="border-b border-gray-100 hover:bg-healthcare-light/30 transition-colors"
+                    >
+                      <td className="py-3 px-4">
+                        <div className="text-sm">
+                          <div className="font-medium text-gray-800">
+                            {new Date(session.start_time).toLocaleDateString()}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {new Date(session.start_time).toLocaleTimeString()}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">
+                            {session.exercise_type === 'knee_extension' ? '🦵' : '💪'}
+                          </span>
+                          <span className="text-sm font-medium capitalize">
+                            {session.exercise_type?.replace('_', ' ') || 'Exercise'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-purple-100 text-purple-700 font-semibold">
+                          {session.total_reps || 0}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="text-lg font-bold text-healthcare-primary">
+                            {session.form_score || 0}%
+                          </span>
+                          {session.form_score >= 85 && <Award className="w-4 h-4 text-yellow-500" />}
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-center text-sm text-gray-600">
+                        {Math.round((session.duration_seconds || 0) / 60)}m {(session.duration_seconds || 0) % 60}s
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                          session.completion_status === 'completed'
+                            ? 'bg-green-100 text-green-700'
+                            : session.completion_status === 'in_progress'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          {session.completion_status || 'unknown'}
+                        </span>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </motion.div>
