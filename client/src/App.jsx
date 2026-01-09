@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Exercise from './pages/Exercise'
 import PatientProfile from './pages/PatientProfile'
+import Profile from './pages/Profile'
 
 function App() {
   return (
@@ -27,6 +28,12 @@ function App() {
               <Route path="/exercise" element={
                 <ProtectedRoute>
                   <Exercise />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Header />
+                  <Profile />
                 </ProtectedRoute>
               } />
               <Route path="/profile/:patientId" element={
