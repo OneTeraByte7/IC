@@ -26,9 +26,11 @@ const Header = () => {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center space-x-3"
           >
-            <div className="bg-gradient-to-br from-healthcare-primary to-healthcare-secondary p-2 rounded-lg">
-              <Heart className="w-8 h-8 text-white" />
-            </div>
+            <img 
+              src="/images/logo.png" 
+              alt="NeuroPath AI Logo" 
+              className="w-12 h-12 object-contain"
+            />
             <div>
               <h1 className="text-2xl font-bold text-healthcare-primary">
                 NeuroPath AI

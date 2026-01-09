@@ -316,6 +316,29 @@ const AICoachAvatar = ({
         }
       }
 
+      // Update leg positions (for knee extension)
+      if (currentKeyframe.positions.leftLeg !== undefined) {
+        const leftLeg = avatarRef.current.getObjectByName('leftLeg');
+        const rightLeg = avatarRef.current.getObjectByName('rightLeg');
+        
+        if (leftLeg && rightLeg) {
+          const leftAngle = THREE.MathUtils.lerp(
+            currentKeyframe.positions.leftLeg,
+            nextKeyframe.positions.leftLeg || 0,
+            segmentProgress
+          );
+          const rightAngle = THREE.MathUtils.lerp(
+            currentKeyframe.positions.rightLeg || 0,
+            nextKeyframe.positions.rightLeg || 0,
+            segmentProgress
+          );
+          
+          // Rotate legs forward for extension
+          leftLeg.rotation.x = THREE.MathUtils.degToRad(leftAngle);
+          rightLeg.rotation.x = THREE.MathUtils.degToRad(rightAngle);
+        }
+      }
+
       // Show coaching instructions (once per loop)
       for (let i = 0; i < animation.instructions.length; i++) {
         const instruction = animation.instructions[i];
