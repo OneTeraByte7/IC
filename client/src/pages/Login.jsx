@@ -40,8 +40,15 @@ const Login = () => {
       <div className="max-w-md w-full">
         {/* Logo and Title */}
         <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <img 
+              src="/images/logo1.png" 
+              alt="NeuroPath AI Logo" 
+              className="w-20 h-20 object-contain"
+            />
+          </div>
           <h1 className="text-4xl font-bold text-white mb-2">
-            🏥 <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
               NeuroPath AI
             </span>
           </h1>
