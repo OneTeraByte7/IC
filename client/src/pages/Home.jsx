@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Heart, Activity, Brain, TrendingUp, ArrowRight } from 'lucide-react'
+import { Heart, Activity, Brain, TrendingUp, ArrowRight, LogIn, UserPlus } from 'lucide-react'
 
 const Home = () => {
   const navigate = useNavigate()
@@ -45,11 +45,45 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
+      {/* Navigation Header */}
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="container mx-auto px-6 py-6"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <img 
+              src="/images/logo.png" 
+              alt="NeuroPath AI Logo" 
+              className="w-12 h-12 object-contain"
+            />
+            <span className="text-2xl font-bold text-gray-800">NeuroPath AI</span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigate('/login')}
+              className="flex items-center gap-2 px-6 py-2.5 text-healthcare-primary hover:bg-healthcare-light rounded-lg transition-colors font-medium"
+            >
+              <LogIn className="w-5 h-5" />
+              <span>Login</span>
+            </button>
+            <button
+              onClick={() => navigate('/login')}
+              className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-healthcare-primary to-healthcare-accent text-white rounded-lg hover:shadow-lg transition-all font-medium"
+            >
+              <UserPlus className="w-5 h-5" />
+              <span>Sign Up</span>
+            </button>
+          </div>
+        </div>
+      </motion.nav>
+
       {/* Hero Section */}
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="container mx-auto px-6 py-20"
+        className="container mx-auto px-6 py-12"
       >
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -68,7 +102,7 @@ const Home = () => {
             </p>
             <div className="flex space-x-4">
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/login')}
                 className="btn-primary flex items-center space-x-2 group"
               >
                 <span>Get Started</span>
@@ -78,7 +112,7 @@ const Home = () => {
                 onClick={() => navigate('/exercise')}
                 className="btn-secondary"
               >
-                Start Exercise
+                Try Demo
               </button>
             </div>
           </motion.div>
