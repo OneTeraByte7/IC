@@ -183,8 +183,8 @@ const ExerciseWithPose = () => {
         await initPoseDetector();
       }
       
-      // Create session in database
-      const session = await startExerciseSession(user.id, 'arm_raise');
+      // Create session in database with selected exercise
+      const session = await startExerciseSession(user.id, selectedExercise.id);
       setSessionId(session.id);
       setSessionStartTime(new Date());
       
@@ -212,7 +212,7 @@ const ExerciseWithPose = () => {
         }
       }, 5000);
       
-      console.log('✅ Exercise session started:', session.id);
+      console.log('✅ Exercise session started with:', selectedExercise.name, session.id);
     } catch (error) {
       console.error('Failed to start exercise:', error);
       alert('Failed to start session. Please try again.');
@@ -345,34 +345,65 @@ const ExerciseWithPose = () => {
     ctx.lineTo(centerX, centerY + 50);
     ctx.stroke();
     
-    // Animated arms
-    const armAngleRad = (angle * Math.PI) / 180;
-    const armLength = 100;
-    
-    // Arms
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY - 60);
-    ctx.lineTo(
-      centerX - armLength * Math.cos(armAngleRad),
-      centerY - 60 - armLength * Math.sin(armAngleRad)
-    );
-    ctx.stroke();
-    
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY - 60);
-    ctx.lineTo(
-      centerX + armLength * Math.cos(armAngleRad),
-      centerY - 60 - armLength * Math.sin(armAngleRad)
-    );
-    ctx.stroke();
-    
-    // Legs
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY + 50);
-    ctx.lineTo(centerX - 40, centerY + 140);
-    ctx.moveTo(centerX, centerY + 50);
-    ctx.lineTo(centerX + 40, centerY + 140);
-    ctx.stroke();
+    // Draw based on exercise type
+    if (selectedExercise.id === 'arm_raise') {
+      // Animated arms for arm raise
+      const armAngleRad = (angle * Math.PI) / 180;
+      const armLength = 100;
+      
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY - 60);
+      ctx.lineTo(
+        centerX - armLength * Math.cos(armAngleRad),
+        centerY - 60 - armLength * Math.sin(armAngleRad)
+      );
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY - 60);
+      ctx.lineTo(
+        centerX + armLength * Math.cos(armAngleRad),
+        centerY - 60 - armLength * Math.sin(armAngleRad)
+      );
+      ctx.stroke();
+      
+      // Static legs
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY + 50);
+      ctx.lineTo(centerX - 40, centerY + 140);
+      ctx.moveTo(centerX, centerY + 50);
+      ctx.lineTo(centerX + 40, centerY + 140);
+      ctx.stroke();
+      
+    } else if (selectedExercise.id === 'knee_extension') {
+      // Static arms
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY - 60);
+      ctx.lineTo(centerX - 80, centerY - 40);
+      ctx.moveTo(centerX, centerY - 60);
+      ctx.lineTo(centerX + 80, centerY - 40);
+      ctx.stroke();
+      
+      // Animated leg for knee extension (seated position)
+      const legAngle = angle / 2; // Scale down for leg movement
+      const legAngleRad = (legAngle * Math.PI) / 180;
+      const legLength = 90;
+      
+      // Left leg - animated (extending forward)
+      ctx.beginPath();
+      ctx.moveTo(centerX - 20, centerY + 50);
+      ctx.lineTo(
+        centerX - 20 + legLength * Math.cos(legAngleRad - Math.PI/2),
+        centerY + 50 + legLength * Math.sin(legAngleRad - Math.PI/2)
+      );
+      ctx.stroke();
+      
+      // Right leg - static
+      ctx.beginPath();
+      ctx.moveTo(centerX + 20, centerY + 50);
+      ctx.lineTo(centerX + 20, centerY + 140);
+      ctx.stroke();
+    }
     
     ctx.shadowBlur = 20;
     ctx.shadowColor = '#00ffff';
@@ -490,12 +521,17 @@ const ExerciseWithPose = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 text-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 text-white p-6 relative">
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-6">
+      <div className="max-w-7xl mx-auto mb-6 relative z-[10000]">
         <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              <img 
+                src="/images/logo.png" 
+                alt="NeuroPath AI Logo" 
+                className="w-12 h-12 object-contain"
+              />
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                   NeuroPath AI - Real Pose Detection
@@ -524,7 +560,7 @@ const ExerciseWithPose = () => {
 
                 {/* Exercise Dropdown */}
                 {showExerciseMenu && !isActive && (
-                  <div className="absolute top-full mt-2 right-0 w-96 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl z-50 overflow-hidden">
+                  <div className="fixed top-20 right-6 w-96 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-[10001]">
                     <div className="p-2 bg-slate-900/50 border-b border-slate-700">
                       <p className="text-xs text-gray-400 font-medium uppercase tracking-wide flex items-center gap-2">
                         <Dumbbell size={14} />
@@ -573,7 +609,17 @@ const ExerciseWithPose = () => {
                 </button>
 
                 {showProfileMenu && (
-                  <div className="absolute top-full mt-2 right-0 w-56 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl z-50 overflow-hidden">
+                  <div className="fixed top-20 right-6 w-56 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-[10001]">
+                    <button
+                      onClick={() => {
+                        navigate('/profile');
+                        setShowProfileMenu(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-700/50 transition-colors text-left"
+                    >
+                      <UserCircle size={18} className="text-blue-400" />
+                      <span>My Profile</span>
+                    </button>
                     <button
                       onClick={() => {
                         navigate('/dashboard');
