@@ -15,7 +15,7 @@ const ExerciseComplete = () => {
   const [formScore, setFormScore] = useState(85);
   const [angle, setAngle] = useState(0);
   const [cameraReady, setCameraReady] = useState(false);
-  
+
   // Rep counting state
   const lastAngleRef = useRef(0);
   const isGoingUpRef = useRef(false);
@@ -24,8 +24,8 @@ const ExerciseComplete = () => {
   // Start camera
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: 640, height: 480, facingMode: 'user' } 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480, facingMode: 'user' }
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -68,15 +68,15 @@ const ExerciseComplete = () => {
   // Draw AI Coach (animated stick figure)
   const drawCoach = (canvas, angle) => {
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     canvas.width = 640;
     canvas.height = 480;
-    
+
     // Clear canvas
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     // Add grid effect
     ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
     ctx.lineWidth = 1;
@@ -92,32 +92,32 @@ const ExerciseComplete = () => {
       ctx.lineTo(canvas.width, i);
       ctx.stroke();
     }
-    
+
     // Draw holographic coach
-    ctx.strokeStyle = '#00ffff';
-    ctx.fillStyle = '#00ffff';
+    ctx.strokeStyle = '#00f0ff'; // healthcare-primary
+    ctx.fillStyle = '#00f0ff';
     ctx.lineWidth = 6;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    
+
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    
+
     // Head
     ctx.beginPath();
     ctx.arc(centerX, centerY - 120, 30, 0, Math.PI * 2);
     ctx.stroke();
-    
+
     // Body
     ctx.beginPath();
     ctx.moveTo(centerX, centerY - 90);
     ctx.lineTo(centerX, centerY + 50);
     ctx.stroke();
-    
+
     // Arms (animated with angle)
     const armAngleRad = (angle * Math.PI) / 180;
     const armLength = 100;
-    
+
     // Left arm
     ctx.beginPath();
     ctx.moveTo(centerX, centerY - 60);
@@ -125,7 +125,7 @@ const ExerciseComplete = () => {
     const leftHandY = centerY - 60 - armLength * Math.sin(armAngleRad);
     ctx.lineTo(leftHandX, leftHandY);
     ctx.stroke();
-    
+
     // Right arm
     ctx.beginPath();
     ctx.moveTo(centerX, centerY - 60);
@@ -133,34 +133,34 @@ const ExerciseComplete = () => {
     const rightHandY = centerY - 60 - armLength * Math.sin(armAngleRad);
     ctx.lineTo(rightHandX, rightHandY);
     ctx.stroke();
-    
+
     // Legs
     ctx.beginPath();
     ctx.moveTo(centerX, centerY + 50);
     ctx.lineTo(centerX - 40, centerY + 140);
     ctx.stroke();
-    
+
     ctx.beginPath();
     ctx.moveTo(centerX, centerY + 50);
     ctx.lineTo(centerX + 40, centerY + 140);
     ctx.stroke();
-    
+
     // Joints (circles)
     const drawJoint = (x, y) => {
       ctx.beginPath();
       ctx.arc(x, y, 10, 0, Math.PI * 2);
       ctx.fill();
     };
-    
+
     drawJoint(centerX, centerY - 120); // Head
     drawJoint(centerX, centerY - 60); // Shoulders
     drawJoint(leftHandX, leftHandY); // Left hand
     drawJoint(rightHandX, rightHandY); // Right hand
     drawJoint(centerX, centerY + 50); // Hips
-    
+
     // Add glow effect
     ctx.shadowBlur = 20;
-    ctx.shadowColor = '#00ffff';
+    ctx.shadowColor = '#00f0ff';
   };
 
   // Animation loop
@@ -283,34 +283,37 @@ const ExerciseComplete = () => {
   }, [isActive, cameraReady]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 text-white p-6">
+    <div className="min-h-screen bg-healthcare-background text-white p-6 relative overflow-hidden">
+      {/* Decorative background blurs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-healthcare-primary/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-healthcare-secondary/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6">
-          <div className="flex items-center justify-between">
+      <div className="max-w-7xl mx-auto mb-8 relative z-10">
+        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                NeuroPath AI - Exercise Session
+              <h1 className="text-3xl font-display font-bold text-white tracking-widest text-glow uppercase">
+                NEUROPATH <span className="text-healthcare-primary">AI</span> - Complete
               </h1>
-              <p className="text-gray-400 mt-2">Real-time AI coaching with pose analysis</p>
+              <p className="text-gray-400 mt-1 uppercase tracking-[0.2em] text-xs font-semibold">Dual-feed kinematic analysis module</p>
             </div>
             <button
               onClick={toggleExercise}
-              className={`flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 ${
-                isActive
-                  ? 'bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/50'
-                  : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg shadow-blue-500/50'
-              }`}
+              className={`flex items-center justify-center gap-3 px-8 py-3.5 rounded-xl font-bold uppercase tracking-widest text-sm transition-all sm:w-auto w-full ${isActive
+                  ? 'bg-healthcare-error/20 border border-healthcare-error hover:bg-healthcare-error text-white shadow-[0_0_20px_rgba(255,0,60,0.4)]'
+                  : 'btn-primary'
+                }`}
             >
               {isActive ? (
                 <>
-                  <Pause size={24} />
-                  <span>Stop Exercise</span>
+                  <Pause size={18} />
+                  <span>Terminate</span>
                 </>
               ) : (
                 <>
-                  <Play size={24} />
-                  <span>Start Exercise</span>
+                  <Play size={18} />
+                  <span>Initiate Link</span>
                 </>
               )}
             </button>
@@ -319,19 +322,19 @@ const ExerciseComplete = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-6">
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8 relative z-10">
         {/* Left: Your Camera Feed */}
         <div className="lg:col-span-1">
-          <div className="bg-gray-900/50 rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm">
-            <div className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 px-4 py-3 border-b border-gray-700/50">
+          <div className="card !p-0 overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+            <div className="bg-healthcare-success/10 px-4 py-3 border-b border-healthcare-success/30">
               <div className="flex items-center gap-2">
-                <User className="text-green-400" size={20} />
-                <span className="font-semibold">YOU - Live Feed</span>
-                {cameraReady && <span className="ml-auto text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">● LIVE</span>}
+                <User className="text-healthcare-success drop-shadow-[0_0_5px_rgba(0,255,102,0.8)]" size={18} />
+                <span className="font-bold text-white uppercase tracking-wider text-sm">Subject Feed</span>
+                {cameraReady && <span className="ml-auto text-[10px] font-bold bg-healthcare-success/20 text-healthcare-success border border-healthcare-success/30 px-2 py-0.5 rounded uppercase tracking-widest shadow-[0_0_8px_rgba(0,255,102,0.3)] animate-pulse">● LIVE</span>}
               </div>
             </div>
-            
-            <div className="relative aspect-[4/3] bg-gray-950">
+
+            <div className="relative aspect-[4/3] bg-black">
               <video
                 ref={videoRef}
                 autoPlay
@@ -339,18 +342,18 @@ const ExerciseComplete = () => {
                 muted
                 className="hidden"
               />
-              
+
               <canvas
                 ref={canvasRef}
                 className="w-full h-full object-contain"
               />
-              
+
               {!isActive && (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-900/90">
-                  <div className="text-center">
-                    <Camera className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-                    <p className="text-gray-400">Click "Start Exercise"</p>
-                    <p className="text-sm text-gray-500 mt-2">Camera will activate</p>
+                <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                  <div className="text-center p-6 border border-white/10 rounded-2xl bg-white/5 mx-4">
+                    <Camera className="w-12 h-12 mx-auto mb-3 text-healthcare-primary/50" />
+                    <p className="text-white font-bold uppercase tracking-widest text-xs mb-1">Sensor Inactive</p>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-widest leading-relaxed">Awaiting initiation.</p>
                   </div>
                 </div>
               )}
@@ -358,72 +361,74 @@ const ExerciseComplete = () => {
           </div>
 
           {/* Stats */}
-          <div className="mt-6 space-y-4">
-            <div className="bg-purple-500/10 rounded-lg p-4 border border-purple-500/20">
-              <div className="text-purple-400 text-sm">Repetitions</div>
-              <div className="text-4xl font-bold mt-1">{repCount}</div>
-              <div className="text-xs text-gray-400 mt-1">Target: 15 reps</div>
+          <div className="mt-8 space-y-4">
+            <div className="bg-black/40 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-colors group">
+              <div className="text-[10px] uppercase font-bold tracking-widest text-healthcare-secondary mb-1">Accumulated Reps</div>
+              <div className="text-3xl font-display font-bold text-white group-hover:text-glow transition-all">{repCount}</div>
+              <div className="text-[9px] uppercase tracking-widest text-gray-500 font-bold mt-1">Target: 15 cycles</div>
             </div>
-            
-            <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
-              <div className="text-blue-400 text-sm">Form Score</div>
-              <div className="text-4xl font-bold mt-1">{Math.round(formScore)}%</div>
-              <div className="h-2 bg-gray-800 rounded-full mt-2 overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+
+            <div className="bg-black/40 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-colors group">
+              <div className="text-[10px] uppercase font-bold tracking-widest text-healthcare-primary mb-1">Form Precision</div>
+              <div className="text-3xl font-display font-bold text-white group-hover:text-glow transition-all mb-3">{Math.round(formScore)}%</div>
+              <div className="h-2 bg-black/60 border border-white/10 rounded-full overflow-hidden shadow-inner flex">
+                <div
+                  className="h-full bg-gradient-to-r from-healthcare-primary to-healthcare-secondary transition-all duration-300 relative"
                   style={{ width: `${formScore}%` }}
-                ></div>
+                >
+                  <div className="absolute inset-0 bg-white/20"></div>
+                </div>
               </div>
             </div>
 
-            <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
-              <div className="text-green-400 text-sm">Arm Angle</div>
-              <div className="text-4xl font-bold mt-1">{angle}°</div>
-              <div className="text-xs text-gray-400 mt-1">Target: 170-180°</div>
+            <div className="bg-black/40 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-colors group">
+              <div className="text-[10px] uppercase font-bold tracking-widest text-healthcare-success mb-1">Extension Angle</div>
+              <div className="text-3xl font-display font-bold text-white group-hover:text-glow transition-all">{angle}°</div>
+              <div className="text-[9px] uppercase tracking-widest text-gray-500 font-bold mt-1">Target: 170-180°</div>
             </div>
           </div>
         </div>
 
         {/* Right: AI Coach + Feedback */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-8">
           {/* AI Coach */}
-          <div className="bg-slate-900/50 rounded-xl overflow-hidden border border-cyan-700/50 backdrop-blur-sm">
-            <div className="bg-gradient-to-r from-cyan-600/20 to-blue-600/20 px-4 py-3 border-b border-gray-700/50">
-              <div className="flex items-center gap-2">
-                <Target className="text-cyan-400" size={20} />
-                <span className="font-semibold">AI COACH - Demonstration</span>
-                {isActive && <span className="ml-auto text-xs bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded">● ACTIVE</span>}
+          <div className="card !p-0 overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+            <div className="bg-healthcare-primary/10 px-5 py-3 border-b border-healthcare-primary/30">
+              <div className="flex items-center gap-3">
+                <Target className="text-healthcare-primary drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]" size={18} />
+                <span className="font-bold text-white uppercase tracking-wider text-sm">System Simulation</span>
+                {isActive && <span className="ml-auto text-[10px] font-bold bg-healthcare-primary/20 text-healthcare-primary border border-healthcare-primary/30 px-2 py-0.5 rounded uppercase tracking-widest shadow-[0_0_8px_rgba(0,240,255,0.3)] animate-pulse">● ACTIVE</span>}
               </div>
             </div>
-            
-            <div className="relative aspect-[4/3] bg-slate-950">
+
+            <div className="relative aspect-[4/3] bg-black">
               <canvas
                 ref={coachCanvasRef}
                 className="w-full h-full object-contain"
               />
-              
+
               {!isActive && (
-                <div className="absolute inset-0 flex items-center justify-center bg-slate-900/90">
-                  <div className="text-center">
-                    <Target className="w-16 h-16 mx-auto mb-4 text-cyan-600" />
-                    <p className="text-cyan-400 text-xl">AI Coach Ready</p>
-                    <p className="text-sm text-gray-500 mt-2">Will demonstrate exercise when you start</p>
+                <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                  <div className="text-center p-6 border border-white/10 rounded-2xl bg-white/5">
+                    <Target className="w-12 h-12 mx-auto mb-3 text-healthcare-secondary/50" />
+                    <p className="text-white font-bold uppercase tracking-widest text-sm mb-2">Simulation Standby</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-widest leading-relaxed">Awaiting module initialization.</p>
                   </div>
                 </div>
               )}
 
               {/* Live coaching overlay */}
               {isActive && (
-                <div className="absolute bottom-4 left-4 right-4 bg-black/80 backdrop-blur-md rounded-lg p-4 border border-cyan-500/30">
-                  <div className="text-cyan-300 text-sm font-medium mb-2">💬 AI Coach Says:</div>
-                  <p className="text-white text-lg">
-                    {angle > 165 
-                      ? "✅ Excellent form! Perfect arm extension!"
+                <div className="absolute bottom-6 left-6 right-6 bg-black/70 backdrop-blur-xl rounded-xl p-5 border border-healthcare-primary/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+                  <div className="text-[10px] text-healthcare-primary uppercase tracking-widest font-bold mb-2 shadow-[0_0_5px_rgba(0,240,255,0.5)]">💬 System Directive:</div>
+                  <p className="text-white font-display font-medium text-lg text-glow tracking-wide">
+                    {angle > 165
+                      ? "✅ Optimal execution. Perfect extension detected!"
                       : angle > 120
-                      ? "⬆️ Almost there! Lift your arms a bit higher!"
-                      : angle > 80
-                      ? "💪 Keep going! Raise those arms up!"
-                      : "🔄 Starting position. Ready to lift!"}
+                        ? "⬆️ Increase elevation magnitude. Keep going."
+                        : angle > 80
+                          ? "💪 Maintain kinetic flow. Raise arms."
+                          : "🔄 Nominal starting position. Ready for cycle."}
                   </p>
                 </div>
               )}
@@ -431,27 +436,27 @@ const ExerciseComplete = () => {
           </div>
 
           {/* Quick Tips */}
-          <div className="bg-gradient-to-br from-amber-600/20 to-orange-600/20 rounded-xl p-6 border border-amber-500/30">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="text-amber-400" size={20} />
-              <h3 className="font-bold text-lg">Exercise Tips</h3>
+          <div className="card !p-5 border-healthcare-warning/30 shadow-[0_0_15px_rgba(255,184,0,0.1)]">
+            <div className="flex items-center gap-3 mb-4">
+              <TrendingUp className="text-orange-500 drop-shadow-[0_0_5px_rgba(255,165,0,0.8)]" size={18} />
+              <h3 className="font-display font-bold text-white uppercase tracking-wider text-sm text-glow">Protocol Guidelines</h3>
             </div>
-            <div className="grid md:grid-cols-2 gap-3">
-              <div className="bg-amber-500/10 rounded-lg p-3 border border-amber-500/20">
-                <div className="text-amber-300 text-sm font-medium mb-1">✓ Keep back straight</div>
-                <div className="text-gray-400 text-xs">Maintain good posture throughout</div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-black/40 rounded-xl p-4 border border-white/5">
+                <div className="text-[11px] text-healthcare-success uppercase tracking-widest font-bold mb-1 shadow-[0_0_2px_rgba(0,255,102,0.8)]">✓ Maintain Alignment</div>
+                <div className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold">Strict spinal posture required</div>
               </div>
-              <div className="bg-amber-500/10 rounded-lg p-3 border border-amber-500/20">
-                <div className="text-amber-300 text-sm font-medium mb-1">✓ Breathe steadily</div>
-                <div className="text-gray-400 text-xs">Exhale as you lift, inhale as you lower</div>
+              <div className="bg-black/40 rounded-xl p-4 border border-white/5">
+                <div className="text-[11px] text-healthcare-success uppercase tracking-widest font-bold mb-1 shadow-[0_0_2px_rgba(0,255,102,0.8)]">✓ Resp. Sync</div>
+                <div className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold">Exhale (rise), Inhale (fall)</div>
               </div>
-              <div className="bg-amber-500/10 rounded-lg p-3 border border-amber-500/20">
-                <div className="text-amber-300 text-sm font-medium mb-1">✓ Move slowly</div>
-                <div className="text-gray-400 text-xs">Control the movement both ways</div>
+              <div className="bg-black/40 rounded-xl p-4 border border-white/5">
+                <div className="text-[11px] text-healthcare-success uppercase tracking-widest font-bold mb-1 shadow-[0_0_2px_rgba(0,255,102,0.8)]">✓ Kinetic Control</div>
+                <div className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold">Constant velocity both ways</div>
               </div>
-              <div className="bg-amber-500/10 rounded-lg p-3 border border-amber-500/20">
-                <div className="text-amber-300 text-sm font-medium mb-1">✓ Mirror the coach</div>
-                <div className="text-gray-400 text-xs">Follow the AI demonstration</div>
+              <div className="bg-black/40 rounded-xl p-4 border border-white/5">
+                <div className="text-[11px] text-healthcare-success uppercase tracking-widest font-bold mb-1 shadow-[0_0_2px_rgba(0,255,102,0.8)]">✓ Object Mirroring</div>
+                <div className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold">Follow simulation exactly</div>
               </div>
             </div>
           </div>
