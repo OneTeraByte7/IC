@@ -1,4 +1,6 @@
 # 🏆 NeuroPath AI - Imagine Cup 2026 Edition
+<img width="1024" height="310" alt="image" src="https://github.com/user-attachments/assets/b4dc01b2-67de-48ff-b36a-8124549d22f5" />
+<img width="1024" height="327" alt="image" src="https://github.com/user-attachments/assets/76e4e877-edbe-4747-bda1-33b7460018d9" />
 
 > **Making world-class physical therapy accessible to 15 million stroke survivors**
 
