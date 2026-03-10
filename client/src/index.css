@@ -4,61 +4,101 @@
 
 @layer base {
   body {
-    @apply bg-gradient-to-br from-healthcare-light via-white to-blue-50 min-h-screen;
+    @apply bg-healthcare-background text-gray-200 min-h-screen overflow-x-hidden;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    /* Subtle noise/texture overlay for premium feel */
+    background-image: radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(112, 0, 255, 0.08) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tight text-white;
   }
 }
 
 @layer components {
+
+  /* Premium Ghost / Neon Buttons */
   .btn-primary {
-    @apply bg-healthcare-primary hover:bg-healthcare-dark text-white font-semibold py-3 px-6 rounded-lg 
-           transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+    @apply relative overflow-hidden bg-white/5 backdrop-blur-md text-white font-medium py-3 px-8 rounded-xl border border-healthcare-primary/30 transition-all duration-500 hover:bg-healthcare-primary/10 hover:border-healthcare-primary hover:shadow-[0_0_30px_-5px_theme(colors.healthcare.primary)] hover:-translate-y-1 active:translate-y-0 z-10;
   }
-  
+
+  .btn-primary::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-healthcare-primary to-healthcare-secondary opacity-0 transition-opacity duration-500 -z-10;
+  }
+
+  .btn-primary:hover::before {
+    @apply opacity-20;
+  }
+
   .btn-secondary {
-    @apply bg-healthcare-secondary hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-lg 
-           transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+    @apply bg-white/5 backdrop-blur-md text-gray-300 font-medium py-3 px-8 rounded-xl border border-white/10 transition-all duration-500 hover:bg-white/10 hover:text-white hover:border-white/20 hover:-translate-y-1;
   }
-  
+
+  /* Glassmorphic Bento Cards */
   .card {
-    @apply bg-white rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-2xl border border-gray-100;
+    @apply bg-healthcare-surface/60 backdrop-blur-xl rounded-2xl p-6 border border-healthcare-border transition-all duration-500 hover:border-white/10 hover:bg-healthcare-surface/80 hover:shadow-2xl overflow-hidden relative;
   }
-  
+
+  .card::after {
+    content: '';
+    @apply absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/5 pointer-events-none;
+  }
+
   .card-healthcare {
-    @apply bg-gradient-to-br from-white to-healthcare-light rounded-xl shadow-lg p-6 
-           transition-all duration-300 hover:shadow-2xl border-2 border-healthcare-primary/20;
+    @apply bg-glass-gradient backdrop-blur-xl rounded-2xl p-6 border border-healthcare-primary/20 transition-all duration-500 hover:border-healthcare-primary/40 hover:shadow-[0_8px_32px_#00f0ff1a] relative overflow-hidden;
   }
-  
+
+  .card-healthcare::before {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-healthcare-primary to-transparent opacity-0 transition-opacity duration-500;
+  }
+
+  .card-healthcare:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Tech Neumorphic Inputs */
   .input-field {
-    @apply w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-healthcare-primary 
-           focus:ring-2 focus:ring-healthcare-primary/20 outline-none transition-all duration-300;
+    @apply w-full px-5 py-3.5 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 text-white placeholder-gray-500 transition-all duration-300 focus:bg-black/60 focus:border-healthcare-primary/50 focus:ring-1 focus:ring-healthcare-primary/50 outline-none;
+  }
+
+  /* Glowing Text utilities */
+  .text-glow {
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+  }
+
+  .text-gradient {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-white via-healthcare-primary to-healthcare-secondary;
   }
 }
 
-/* Custom Animations */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-/* Scrollbar Styling */
+/* Scrollbar Customization */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  @apply bg-black;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #0066CC;
-  border-radius: 5px;
+  @apply bg-white/20 rounded-full transition-colors;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #003D82;
+  @apply bg-healthcare-primary/50;
+}
+
+/* Custom Selection */
+::selection {
+  @apply bg-healthcare-primary/30 text-white;
 }
