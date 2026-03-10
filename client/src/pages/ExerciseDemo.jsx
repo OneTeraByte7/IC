@@ -17,8 +17,8 @@ const ExerciseDemo = () => {
   // Start camera
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: 640, height: 480 } 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480 }
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -139,34 +139,36 @@ const ExerciseDemo = () => {
   }, [isActive]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 text-white p-6">
+    <div className="min-h-screen bg-healthcare-background text-white p-6 relative overflow-hidden">
+      {/* Decorative background blurs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-healthcare-primary/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-healthcare-secondary/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6">
-          <div className="flex items-center justify-between">
+      <div className="max-w-7xl mx-auto mb-8 relative z-10">
+        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                NeuroPath AI - Exercise Session
+              <h1 className="text-3xl font-display font-bold text-white tracking-widest text-glow uppercase">
+                NEUROPATH <span className="text-healthcare-primary">AI</span> - Session
               </h1>
-              <p className="text-gray-400 mt-2">Real-time pose analysis with AI feedback</p>
+              <p className="text-gray-400 mt-1 uppercase tracking-[0.2em] text-xs font-semibold">Real-time kinematic analysis module</p>
             </div>
             <button
               onClick={toggleExercise}
-              className={`flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 ${
-                isActive
-                  ? 'bg-red-500 hover:bg-red-600'
-                  : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'
-              }`}
+              className={`flex items-center justify-center gap-3 px-8 py-3.5 rounded-xl font-bold uppercase tracking-widest text-sm transition-all sm:w-auto w-full ${isActive
+                  ? 'bg-healthcare-error/20 border border-healthcare-error hover:bg-healthcare-error text-white shadow-[0_0_20px_rgba(255,0,60,0.4)]'
+                  : 'btn-primary'
+                }`}
             >
               {isActive ? (
                 <>
-                  <Pause size={24} />
-                  <span>Stop Exercise</span>
+                  <Pause size={18} />
+                  <span>Terminate</span>
                 </>
               ) : (
                 <>
-                  <Play size={24} />
-                  <span>Start Exercise</span>
+                  <Play size={18} />
+                  <span>Initiate Link</span>
                 </>
               )}
             </button>
@@ -175,18 +177,19 @@ const ExerciseDemo = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-6">
+      <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 relative z-10">
         {/* Video Feed - Takes 2 columns */}
         <div className="md:col-span-2">
-          <div className="bg-gray-900/50 rounded-xl overflow-hidden border border-gray-700/50 backdrop-blur-sm">
-            <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 px-4 py-3 border-b border-gray-700/50">
-              <div className="flex items-center gap-2">
-                <Camera className="text-blue-400" size={20} />
-                <span className="font-semibold">Live Camera Feed with Pose Detection</span>
+          <div className="card !p-0 overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+            <div className="bg-healthcare-success/10 px-5 py-3 border-b border-healthcare-success/30">
+              <div className="flex items-center gap-3">
+                <Camera className="text-healthcare-success drop-shadow-[0_0_5px_rgba(0,255,102,0.8)]" size={18} />
+                <span className="font-bold text-white uppercase tracking-wider text-sm">Live Kinematic Feed</span>
+                {isActive && <span className="ml-auto text-[10px] font-bold bg-healthcare-success/20 text-healthcare-success border border-healthcare-success/30 px-2 py-0.5 rounded uppercase tracking-widest shadow-[0_0_8px_rgba(0,255,102,0.3)] animate-pulse">● LIVE</span>}
               </div>
             </div>
-            
-            <div className="relative aspect-video bg-gray-950">
+
+            <div className="relative aspect-video bg-black">
               {/* Hidden video element */}
               <video
                 ref={videoRef}
@@ -195,37 +198,38 @@ const ExerciseDemo = () => {
                 muted
                 className="hidden"
               />
-              
+
               {/* Canvas for drawing skeleton */}
               <canvas
                 ref={canvasRef}
                 className="w-full h-full object-contain"
               />
-              
+
               {!isActive && (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80">
-                  <div className="text-center">
-                    <Camera className="w-20 h-20 mx-auto mb-4 text-gray-600" />
-                    <p className="text-xl text-gray-400">Click "Start Exercise" to begin</p>
+                <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                  <div className="text-center p-6 border border-white/10 rounded-2xl bg-white/5">
+                    <Camera className="w-12 h-12 mx-auto mb-4 text-healthcare-primary/50" />
+                    <p className="text-white font-bold uppercase tracking-widest text-sm mb-2">Sensor Inactive</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-widest leading-relaxed">System awaiting link initiation.</p>
                   </div>
                 </div>
               )}
 
               {/* Live Metrics Overlay */}
               {isActive && (
-                <div className="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-md rounded-lg p-4 border border-green-500/30">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-green-400 text-sm font-medium">Current Angle</div>
-                      <div className="text-3xl font-bold">{angle}°</div>
+                <div className="absolute bottom-6 left-6 right-6 bg-black/60 backdrop-blur-xl rounded-xl p-5 border border-healthcare-success/30 shadow-[0_0_20px_rgba(0,255,102,0.2)]">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="text-center sm:text-left">
+                      <div className="text-[10px] uppercase font-bold text-healthcare-success tracking-widest mb-1 shadow-[0_0_5px_rgba(0,255,102,0.5)]">Extension Angle</div>
+                      <div className="text-3xl font-display font-bold text-white text-glow">{angle}°</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-blue-400 text-sm font-medium">Form Score</div>
-                      <div className="text-3xl font-bold">{Math.round(formScore)}%</div>
+                      <div className="text-[10px] uppercase font-bold text-healthcare-primary tracking-widest mb-1 shadow-[0_0_5px_rgba(0,240,255,0.5)]">Form Precision</div>
+                      <div className="text-3xl font-display font-bold text-white text-glow">{Math.round(formScore)}%</div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-purple-400 text-sm font-medium">Repetitions</div>
-                      <div className="text-3xl font-bold">{repCount}</div>
+                    <div className="text-center sm:text-right">
+                      <div className="text-[10px] uppercase font-bold text-healthcare-secondary tracking-widest mb-1 shadow-[0_0_5px_rgba(112,0,255,0.5)]">Cycle Count</div>
+                      <div className="text-3xl font-display font-bold text-white text-glow">{repCount}</div>
                     </div>
                   </div>
                 </div>
@@ -235,82 +239,84 @@ const ExerciseDemo = () => {
         </div>
 
         {/* Stats Panel */}
-        <div className="space-y-6">
+        <div className="space-y-6 flex flex-col">
           {/* AI Coach */}
-          <div className="bg-gradient-to-br from-cyan-600/20 to-blue-600/20 rounded-xl p-6 border border-cyan-500/30">
-            <div className="flex items-center gap-2 mb-4">
-              <Target className="text-cyan-400" size={20} />
-              <h3 className="font-bold text-lg">AI Coach</h3>
+          <div className="card !p-5 border-healthcare-primary/30 shadow-[0_0_15px_rgba(0,240,255,0.1)]">
+            <div className="flex items-center gap-3 mb-4">
+              <Target className="text-healthcare-primary drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]" size={18} />
+              <h3 className="font-display font-bold text-white uppercase tracking-wider text-sm text-glow">System Feedback</h3>
             </div>
             <div className="space-y-3">
-              <div className="bg-cyan-500/10 rounded-lg p-3 border border-cyan-500/20">
-                <p className="text-cyan-300 text-sm">
-                  {isActive 
-                    ? angle > 150 
-                      ? "✅ Excellent! Keep your arms straight!"
+              <div className="bg-black/40 rounded-xl p-4 border border-white/5">
+                <p className="text-white font-bold tracking-wide text-sm drop-shadow-md">
+                  {isActive
+                    ? angle > 150
+                      ? "✅ Optimal trajectory. Maintain."
                       : angle > 100
-                      ? "⬆️ Lift your arms higher!"
-                      : "🔄 Continue the movement smoothly"
-                    : "👋 Ready to start? Click the button above!"}
+                        ? "⬆️ Increase extension magnitude."
+                        : "🔄 Continue execution loop."
+                    : "👋 Module standby. Awaiting execution."}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Session Stats */}
-          <div className="bg-gray-900/50 rounded-xl p-6 border border-gray-700/50">
-            <div className="flex items-center gap-2 mb-4">
-              <Activity className="text-purple-400" size={20} />
-              <h3 className="font-bold text-lg">Session Stats</h3>
+          <div className="card !p-5 border-healthcare-secondary/30 shadow-[0_0_15px_rgba(112,0,255,0.1)]">
+            <div className="flex items-center gap-3 mb-4">
+              <Activity className="text-healthcare-secondary drop-shadow-[0_0_5px_rgba(112,0,255,0.8)]" size={18} />
+              <h3 className="font-display font-bold text-white uppercase tracking-wider text-sm text-glow">Live Telemetry</h3>
             </div>
             <div className="space-y-4">
-              <div className="bg-purple-500/10 rounded-lg p-4 border border-purple-500/20">
-                <div className="text-purple-400 text-sm">Repetitions</div>
-                <div className="text-3xl font-bold mt-1">{repCount}</div>
-                <div className="text-xs text-gray-400 mt-1">Target: 15 reps</div>
+              <div className="bg-black/40 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-colors group">
+                <div className="text-[10px] uppercase font-bold tracking-widest text-healthcare-secondary mb-1">Accumulated Reps</div>
+                <div className="text-3xl font-display font-bold text-white group-hover:text-glow transition-all">{repCount}</div>
+                <div className="text-[9px] uppercase tracking-widest text-gray-500 font-bold mt-1">Target: 15 cycles</div>
               </div>
-              
-              <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
-                <div className="text-blue-400 text-sm">Form Accuracy</div>
-                <div className="text-3xl font-bold mt-1">{Math.round(formScore)}%</div>
-                <div className="h-2 bg-gray-800 rounded-full mt-2 overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+
+              <div className="bg-black/40 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-colors group">
+                <div className="text-[10px] uppercase font-bold tracking-widest text-healthcare-primary mb-1">Form Precision</div>
+                <div className="text-3xl font-display font-bold text-white group-hover:text-glow transition-all mb-3">{Math.round(formScore)}%</div>
+                <div className="h-2 bg-black/60 border border-white/10 rounded-full overflow-hidden shadow-inner flex">
+                  <div
+                    className="h-full bg-gradient-to-r from-healthcare-primary to-healthcare-secondary transition-all duration-300 relative"
                     style={{ width: `${formScore}%` }}
-                  ></div>
+                  >
+                    <div className="absolute inset-0 bg-white/20"></div>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
-                <div className="text-green-400 text-sm">Range of Motion</div>
-                <div className="text-3xl font-bold mt-1">{angle}°</div>
-                <div className="text-xs text-gray-400 mt-1">Target: 160-180°</div>
+              <div className="bg-black/40 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-colors group">
+                <div className="text-[10px] uppercase font-bold tracking-widest text-healthcare-success mb-1">Extension Angle</div>
+                <div className="text-3xl font-display font-bold text-white group-hover:text-glow transition-all">{angle}°</div>
+                <div className="text-[9px] uppercase tracking-widest text-gray-500 font-bold mt-1">Target: 160-180°</div>
               </div>
             </div>
           </div>
 
           {/* Quick Tips */}
-          <div className="bg-gradient-to-br from-amber-600/20 to-orange-600/20 rounded-xl p-6 border border-amber-500/30">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="text-amber-400" size={20} />
-              <h3 className="font-bold text-lg">Quick Tips</h3>
+          <div className="card !p-5 border-healthcare-warning/30 shadow-[0_0_15px_rgba(255,184,0,0.1)] flex-1">
+            <div className="flex items-center gap-3 mb-4">
+              <TrendingUp className="text-orange-500 drop-shadow-[0_0_5px_rgba(255,165,0,0.8)]" size={18} />
+              <h3 className="font-display font-bold text-white uppercase tracking-wider text-sm text-glow">Protocol Data</h3>
             </div>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li className="flex items-start gap-2">
-                <span className="text-green-400">✓</span>
-                <span>Keep your back straight</span>
+            <ul className="space-y-3 text-[11px] text-gray-300 uppercase tracking-widest font-semibold">
+              <li className="flex items-start gap-3 bg-white/5 p-3 rounded-lg">
+                <span className="text-healthcare-success font-bold text-sm leading-none drop-shadow-[0_0_2px_rgba(0,255,102,0.8)]">✓</span>
+                <span className="mt-0.5">Maintain spinal alignment</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-400">✓</span>
-                <span>Move slowly and controlled</span>
+              <li className="flex items-start gap-3 bg-white/5 p-3 rounded-lg">
+                <span className="text-healthcare-success font-bold text-sm leading-none drop-shadow-[0_0_2px_rgba(0,255,102,0.8)]">✓</span>
+                <span className="mt-0.5">Execute with constant velocity</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-400">✓</span>
-                <span>Breathe steadily</span>
+              <li className="flex items-start gap-3 bg-white/5 p-3 rounded-lg">
+                <span className="text-healthcare-success font-bold text-sm leading-none drop-shadow-[0_0_2px_rgba(0,255,102,0.8)]">✓</span>
+                <span className="mt-0.5">Synchronize respiratory cycle</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-400">✓</span>
-                <span>Stop if you feel pain</span>
+              <li className="flex items-start gap-3 bg-white/5 p-3 rounded-lg">
+                <span className="text-healthcare-success font-bold text-sm leading-none drop-shadow-[0_0_2px_rgba(0,255,102,0.8)]">✓</span>
+                <span className="mt-0.5">Terminate upon pain detection</span>
               </li>
             </ul>
           </div>
