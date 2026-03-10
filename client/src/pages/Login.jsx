@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
-import { Mail, Lock, User, Eye, EyeOff, Loader } from 'lucide-react'
+import { Mail, Lock, User, Eye, EyeOff, Loader, Activity } from 'lucide-react'
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true)
@@ -11,7 +11,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  
+
   const { signIn, signUp } = useAuth()
   const navigate = useNavigate()
 
@@ -36,67 +36,68 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Decorative background blurs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-healthcare-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-healthcare-secondary/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <div className="max-w-md w-full relative z-10">
         {/* Logo and Title */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <img 
-              src="/images/logo1.png" 
-              alt="NeuroPath AI Logo" 
-              className="w-20 h-20 object-contain"
+          <div className="flex items-center justify-center mb-6 relative">
+            <div className="absolute inset-0 bg-healthcare-primary/30 blur-2xl rounded-full w-24 h-24 mx-auto"></div>
+            <img
+              src="/images/logo.png"
+              alt="NeuroPath AI Logo"
+              className="w-20 h-20 object-contain drop-shadow-[0_0_15px_rgba(0,240,255,0.8)] relative z-10"
             />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              NeuroPath AI
-            </span>
+          <h1 className="text-4xl font-display font-bold text-white mb-2 tracking-widest text-glow uppercase">
+            NEUROPATH
           </h1>
-          <p className="text-gray-400">AI-Powered Neurorehabilitation Platform</p>
+          <p className="text-healthcare-primary uppercase tracking-[0.2em] text-xs font-semibold">Authentication Protocol</p>
         </div>
 
         {/* Auth Card */}
-        <div className="bg-gray-800/50 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-gray-700">
+        <div className="card !bg-black/60 !backdrop-blur-3xl p-8 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
           {/* Toggle Buttons */}
-          <div className="flex gap-2 mb-6 bg-gray-900/50 p-1 rounded-lg">
+          <div className="flex gap-2 mb-8 bg-white/5 p-1.5 rounded-xl border border-white/5">
             <button
               onClick={() => setIsLogin(true)}
-              className={`flex-1 py-2 rounded-lg font-medium transition-all ${
-                isLogin 
-                  ? 'bg-blue-500 text-white shadow-lg' 
-                  : 'text-gray-400 hover:text-white'
-              }`}
+              className={`flex-1 py-2 rounded-lg font-medium transition-all text-sm ${isLogin
+                  ? 'bg-healthcare-primary/20 text-white shadow-[0_0_15px_rgba(0,240,255,0.3)] border border-healthcare-primary/50'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
             >
-              Login
+              System Login
             </button>
             <button
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2 rounded-lg font-medium transition-all ${
-                !isLogin 
-                  ? 'bg-blue-500 text-white shadow-lg' 
-                  : 'text-gray-400 hover:text-white'
-              }`}
+              className={`flex-1 py-2 rounded-lg font-medium transition-all text-sm ${!isLogin
+                  ? 'bg-healthcare-primary/20 text-white shadow-[0_0_15px_rgba(0,240,255,0.3)] border border-healthcare-primary/50'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
             >
-              Sign Up
+              New Subject
             </button>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Full Name (Sign Up only) */}
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Full Name
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                  Subject Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-gray-900/50 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="John Doe"
+                    className="input-field pl-12"
+                    placeholder="Enter full designation"
                     required={!isLogin}
                   />
                 </div>
@@ -105,17 +106,17 @@ const Login = () => {
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email
+              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                Neural ID (Email)
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-gray-900/50 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="you@example.com"
+                  className="input-field pl-12"
+                  placeholder="subject@network.com"
                   required
                 />
               </div>
@@ -123,23 +124,23 @@ const Login = () => {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Password
+              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                Security Key
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-12 py-3 bg-gray-900/50 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="input-field pl-12 pr-12"
                   placeholder="••••••••"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-healthcare-primary transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -148,11 +149,11 @@ const Login = () => {
 
             {/* Error Message */}
             {error && (
-              <div className={`p-3 rounded-lg text-sm ${
-                error.includes('Check your email') 
-                  ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                  : 'bg-red-500/10 text-red-400 border border-red-500/20'
-              }`}>
+              <div className={`p-4 rounded-xl text-sm border font-medium flex items-center gap-3 ${error.includes('Check your email')
+                  ? 'bg-healthcare-accent/10 border-healthcare-accent/30 text-healthcare-accent'
+                  : 'bg-healthcare-error/10 border-healthcare-error/30 text-healthcare-error'
+                }`}>
+                <Activity className="w-5 h-5 shrink-0" />
                 {error}
               </div>
             )}
@@ -161,37 +162,37 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-3 rounded-lg font-medium hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full btn-primary text-sm tracking-wide mt-2 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
                   <Loader className="w-5 h-5 animate-spin" />
-                  Processing...
+                  Authenticating...
                 </>
               ) : (
-                isLogin ? 'Sign In' : 'Create Account'
+                isLogin ? 'Initiate Link' : 'Register Subject'
               )}
             </button>
           </form>
 
           {/* Forgot Password */}
           {isLogin && (
-            <div className="mt-4 text-center">
-              <a href="#" className="text-sm text-blue-400 hover:text-blue-300">
-                Forgot password?
-              </a>
+            <div className="mt-6 text-center">
+              <button className="text-xs text-gray-400 hover:text-healthcare-primary transition-colors uppercase tracking-widest font-semibold border-b border-transparent hover:border-healthcare-primary pb-0.5">
+                Reset Security Key
+              </button>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <p className="text-center text-gray-500 text-sm mt-6">
-          {isLogin ? "Don't have an account? " : "Already have an account? "}
+        <p className="text-center text-gray-500 text-sm mt-8 font-light">
+          {isLogin ? "Unregistered Subject? " : "Authorized Subject? "}
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-blue-400 hover:text-blue-300 font-medium"
+            className="text-healthcare-primary hover:text-white transition-colors font-medium border-b border-healthcare-primary/30 ml-1"
           >
-            {isLogin ? 'Sign up' : 'Login'}
+            {isLogin ? 'Register Here' : 'Login Here'}
           </button>
         </p>
       </div>
