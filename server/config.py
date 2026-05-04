@@ -3,6 +3,7 @@ Configuration settings for NeuroPath AI Server
 """
 
 import os
+import pandas
 from pathlib import Path
 from dotenv import load_dotenv
 
