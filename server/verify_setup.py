@@ -18,7 +18,7 @@ def check_env_file():
     
     env_path = Path(".env")
     if not env_path.exists():
-        print("❌ .env file not found!")
+        print("❌ .env file not found in the directory!")
         return False
     
     print("✅ .env file exists")
